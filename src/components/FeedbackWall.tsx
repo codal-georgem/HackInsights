@@ -47,15 +47,15 @@ function getCardVisuals(index: number, messageLength: number) {
   const rotate = rand * 4 - 2;
   const x = rand * 10 - 5;
 
-  let widthClass = "w-[23%] md:w-auto md:max-w-sm";
+  let widthClass = "w-full sm:w-[48%] md:w-auto md:max-w-sm";
 
   if (messageLength < 40) {
-    widthClass = "w-[23%] md:w-auto md:max-w-[200px]";
+    widthClass = "w-full sm:w-[31%] md:w-auto md:max-w-[200px]";
   } else if (messageLength > 150) {
-    widthClass = "w-[48%] md:w-auto md:max-w-md";
+    widthClass = "w-full sm:w-[98%] md:w-auto md:max-w-md";
   } else {
-    if (rand < 0.5) widthClass = "w-[23%] md:w-auto md:max-w-xs";
-    else widthClass = "w-[31%] md:w-auto md:max-w-[300px]";
+    if (rand < 0.5) widthClass = "w-full sm:w-[48%] md:w-auto md:max-w-xs";
+    else widthClass = "w-full sm:w-[48%] md:w-auto md:max-w-[300px]";
   }
 
   return { rotate, x, widthClass };
@@ -96,24 +96,24 @@ function FeedbackCard({
       animate={
         isNew
           ? {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            x: x,
+            rotate: [0, rotate],
+            filter: ["blur(10px)", "blur(0px)"],
+            boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
+          }
+          : isInView
+            ? {
               opacity: 1,
               scale: 1,
               y: 0,
               x: x,
-              rotate: [0, rotate],
-              filter: ["blur(10px)", "blur(0px)"],
+              rotate: rotate,
+              filter: "blur(0px)",
               boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
             }
-          : isInView
-            ? {
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                x: x,
-                rotate: rotate,
-                filter: "blur(0px)",
-                boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
-              }
             : {}
       }
       transition={

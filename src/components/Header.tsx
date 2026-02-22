@@ -22,7 +22,7 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b border-brand-border bg-brand-bg/85 px-4 md:px-8 py-4 backdrop-blur-md transition-all"
+      className="fixed top-0 left-0 right-0 z-50 flex flex-wrap md:flex-nowrap items-center justify-between border-b border-brand-border bg-brand-bg/85 px-4 md:px-8 py-3 md:py-4 backdrop-blur-md transition-all"
     >
       <a
         href="https://codal.com/"
@@ -46,7 +46,7 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
         </div>
       </a>
 
-      <div className="flex-1 max-w-md mx-2 md:mx-4">
+      <div className="order-last w-full mt-3 flex-none basis-full md:basis-auto md:order-none md:mt-0 md:w-auto md:flex-1 md:mx-4 max-w-md md:max-w-md mx-auto">
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-slate-400 dark:text-brand-muted group-focus-within:text-brand-primary dark:group-focus-within:text-brand-primary transition-colors" />
@@ -66,53 +66,53 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 md:gap-2">
         {mounted && (
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
               dark:bg-brand-surface-2 dark:text-brand-text dark:border-brand-border dark:hover:bg-brand-surface"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            {theme === "dark" ? <Sun size={14} className="sm:w-[16px] sm:h-[16px]" /> : <Moon size={14} className="sm:w-[16px] sm:h-[16px]" />}
           </button>
         )}
 
         <button
           onClick={onTeamsClick}
           aria-label="View Teams"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-brand-primary backdrop-blur-sm transition-all hover:bg-white active:scale-95
-            dark:bg-brand-surface-2 dark:text-brand-primary-light dark:border-brand-border dark:hover:bg-brand-surface sm:w-auto sm:px-3 sm:gap-2"
+          className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-brand-primary backdrop-blur-sm transition-all hover:bg-white active:scale-95
+            dark:bg-brand-surface-2 dark:text-brand-primary-light dark:border-brand-border dark:hover:bg-brand-surface md:w-auto md:px-3 md:gap-2"
         >
-          <Trophy size={16} />
-          <span className="hidden sm:inline text-xs font-semibold">Teams</span>
+          <Trophy size={14} className="sm:w-[16px] sm:h-[16px]" />
+          <span className="hidden md:inline text-xs font-semibold">Teams</span>
         </button>
 
         <button
           onClick={onOrganizersClick}
           aria-label="View Organizers"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
-            dark:bg-brand-surface-2 dark:text-brand-text dark:border-brand-border dark:hover:bg-brand-surface sm:w-auto sm:px-3 sm:gap-2"
+          className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
+            dark:bg-brand-surface-2 dark:text-brand-text dark:border-brand-border dark:hover:bg-brand-surface md:w-auto md:px-3 md:gap-2"
         >
-          <Users size={16} />
-          <span className="hidden sm:inline text-xs font-semibold">Organizers</span>
+          <Users size={14} className="sm:w-[16px] sm:h-[16px]" />
+          <span className="hidden md:inline text-xs font-semibold">Organizers</span>
         </button>
 
         <button
           onClick={onAddClick}
           aria-label="Add feedback"
-          className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-brand-primary to-purple-600 px-4 py-2 text-xs font-bold text-white shadow-[0_0_20px_rgba(var(--c-primary),0.4)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(var(--c-primary),0.6)] active:scale-95"
+          className="group relative flex h-8 items-center gap-1 sm:h-auto overflow-hidden rounded-full bg-gradient-to-r from-brand-primary to-purple-600 px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold text-white shadow-[0_0_20px_rgba(var(--c-primary),0.4)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(var(--c-primary),0.6)] active:scale-95"
         >
           {/* Animated background sheen */}
           <span className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-none" />
 
-          <span className="relative flex h-1.5 w-1.5">
+          <span className="relative flex h-1 w-1 sm:h-1.5 sm:w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_10px_white]" />
+            <span className="relative inline-flex h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-white shadow-[0_0_10px_white]" />
           </span>
 
-          <Plus size={14} strokeWidth={3} className="transition-transform group-hover:rotate-90" />
-          <span>Mic Drop</span>
+          <Plus size={12} strokeWidth={3} className="sm:w-[14px] sm:h-[14px] transition-transform group-hover:rotate-90" />
+          <span className="whitespace-nowrap">Mic Drop</span>
         </button>
       </div>
     </header>
