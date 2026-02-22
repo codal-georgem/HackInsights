@@ -2,19 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Prevent double scrollbars - let the app handle scrolling internally */
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  overscroll-behavior: none; /* Prevent bounce scrolling on some browsers */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Codal brand tokens (derived from public/codal-logo.png) ─────────────── */
+:root {
+  /* Light mode tokens (Cool Gray / Indigo tint) */
+  --c-bg: #f3f4f6; /* Gray-100 - slightly darker than pure white for contrast */
+  --c-surface: #ffffff;
+  --c-surface-2: #f9fafb; /* Gray-50 */
+  --c-border: #d1d5db; /* Gray-300 */
+  --c-primary: #4432F5; /* Keep brand primary */
+  --c-primary-light: #6457F0;
+  --c-primary-glow: rgba(68, 50, 245, 0.15); /* Softer glow for light mode */
+  --c-text: #111827; /* Gray-900 - sharp text */
+  --c-muted: #6b7280; /* Gray-500 */
+  --c-card-bg: rgba(255, 255, 255, 0.75); /* Glassy white */
+
+  --font-geist-sans: "Geist Sans", sans-serif;
+  --font-geist-mono: "Geist Mono", monospace;
+  --foreground: #111827;
+  --background: #f3f4f6;
 }
+
+[class~="dark"] {
+  /* Dark mode tokens */
+  --c-bg: #060818;
+  --c-surface: #0C1525;
+  --c-surface-2: #111E35;
+  --c-border: #1B2C4A;
+  --c-primary: #4432F5;
+  --c-primary-light: #6457F0;
+  --c-primary-glow: rgba(68, 50, 245, 0.35);
+  --c-text: #E4EEFF;
+  --c-muted: #6B84AD;
+  --c-card-bg: rgba(12, 21, 37, 0.92);
+
+  --foreground: #ededed;
+  --background: #0a0a0a;
+}
+
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--c-text);
+  background: var(--c-bg);
+  font-family: var(--font-geist-sans), sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── Tiptap / ProseMirror editor styles ──────────────────────────────────── */
+.ProseMirror {
+  outline: none;
+  min-height: 120px;
+  color: var(--c-text) !important;
+  caret-color: var(--c-text);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
+}
+
+.ProseMirror p {
+  margin: 0 0 0.25rem;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.ProseMirror strong {
+  color: var(--c-text);
+  font-weight: 700;
+}
+
+.ProseMirror em {
+  color: var(--c-text);
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--c-muted);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* ── Feedback wall card glow on hover ────────────────────────────────────── */
+.feedback-card:hover {
+  box-shadow: 0 0 0 1px var(--c-border), 0 8px 32px var(--c-primary-glow);
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }

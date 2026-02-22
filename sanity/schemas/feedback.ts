@@ -6,59 +6,45 @@ export const feedback = defineType({
   type: "document",
   fields: [
     defineField({
-      name: "name",
-      title: "Name",
-      type: "string",
-      validation: (Rule) => Rule.required().min(2).max(80),
-    }),
-    defineField({
-      name: "role",
-      title: "Role",
-      type: "string",
-      options: {
-        list: [
-          { title: "Participant", value: "participant" },
-          { title: "Mentor", value: "mentor" },
-          { title: "Organizer", value: "organizer" },
-        ],
-        layout: "radio",
-      },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
       name: "message",
       title: "Message",
       type: "text",
-      rows: 4,
-      validation: (Rule) => Rule.required().min(10).max(500),
+      rows: 3,
+      validation: (Rule) => Rule.required().min(1).max(300),
+    }),
+    defineField({
+      name: "name",
+      title: "Name",
+      type: "string",
+      description: "Optional (Anonymous if empty)",
+      validation: (Rule) => Rule.max(20),
     }),
     defineField({
       name: "rating",
-      title: "Star Rating",
+      title: "Rating",
       type: "number",
-      options: {
-        list: [1, 2, 3, 4, 5],
-      },
-      validation: (Rule) => Rule.required().min(1).max(5).integer(),
+      description: "1–5 stars from the participant",
+      validation: (Rule) => Rule.required().min(1).max(5),
     }),
     defineField({
       name: "submittedAt",
       title: "Submitted At",
       type: "datetime",
-      // Auto-set on creation via the write client — not shown in Studio form
+      // Set server-side on creation — not shown in Studio form
       hidden: true,
     }),
   ],
   preview: {
     select: {
-      title: "name",
-      subtitle: "role",
-      rating: "rating",
+      title: "message",
+      subtitle: "submittedAt",
     },
-    prepare({ title, subtitle, rating }) {
+    prepare({ title, subtitle }) {
       return {
-        title,
-        subtitle: `${subtitle} · ${"★".repeat(rating ?? 0)}`,
+        title: title ?? "—",
+        subtitle: subtitle
+          ? new Date(subtitle).toLocaleString()
+          : "No date",
       };
     },
   },
