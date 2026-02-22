@@ -13,13 +13,11 @@ export async function POST(req: NextRequest) {
   interface FeedbackBody {
     message?: string;
     name?: string;
-    rating?: number;
   }
 
   const typedBody = body as FeedbackBody;
   const message = typedBody.message;
   const name = typedBody.name;
-  const rating = typedBody.rating;
 
   if (typeof message !== "string" || message.trim().length === 0) {
     return NextResponse.json({ error: "Message is required." }, { status: 400 });
@@ -35,20 +33,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const numericRating = typeof rating === "number" ? rating : Number.NaN;
-  if (!Number.isFinite(numericRating) || numericRating < 1 || numericRating > 5) {
-    return NextResponse.json(
-      { error: "Rating must be a number between 1 and 5." },
-      { status: 400 }
-    );
-  }
-
   try {
     const doc = await writeClient.create({
       _type: "feedback",
       message: trimmedMessage,
       name: trimmedName,
-      rating: numericRating,
       submittedAt: new Date().toISOString(),
     });
 

@@ -20,13 +20,6 @@ export const feedback = defineType({
       validation: (Rule) => Rule.max(20),
     }),
     defineField({
-      name: "rating",
-      title: "Rating",
-      type: "number",
-      description: "1–5 stars from the participant",
-      validation: (Rule) => Rule.required().min(1).max(5),
-    }),
-    defineField({
       name: "submittedAt",
       title: "Submitted At",
       type: "datetime",

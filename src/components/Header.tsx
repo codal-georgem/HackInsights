@@ -106,13 +106,8 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
           {/* Animated background sheen */}
           <span className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-none" />
 
-          <span className="relative flex h-1 w-1 sm:h-1.5 sm:w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-            <span className="relative inline-flex h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-white shadow-[0_0_10px_white]" />
-          </span>
-
-          <Plus size={12} strokeWidth={3} className="sm:w-[14px] sm:h-[14px] transition-transform group-hover:rotate-90" />
-          <span className="whitespace-nowrap">Mic Drop</span>
+          <Plus size={12} strokeWidth={3} className="sm:w-[14px] sm:h-[14px] transition-transform group-hover:rotate-90 animate-pulse" />
+          <span className="whitespace-nowrap">Share Feedback</span>
         </button>
       </div>
     </header>

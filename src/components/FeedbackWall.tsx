@@ -2,7 +2,7 @@
 
 import { useRef, type ReactNode } from "react";
 import { motion, useInView } from "framer-motion";
-import { Quote, Star } from "lucide-react";
+import { Quote, Loader2, ArrowDown } from "lucide-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 export type FeedbackItem = {
@@ -10,7 +10,6 @@ export type FeedbackItem = {
   message: string;
   name?: string;
   submittedAt: string;
-  rating?: number;
 };
 
 function renderMessage(text: string): ReactNode {
@@ -40,25 +39,20 @@ function pseudoRandom(seed: number) {
   return x - Math.floor(x);
 }
 
-function getCardVisuals(index: number, messageLength: number) {
+function getCardWidth(index: number, messageLength: number) {
   const seed = index * 1337;
   const rand = pseudoRandom(seed);
-  // Random rotation between -2 and 2 degrees
-  const rotate = rand * 4 - 2;
-  const x = rand * 10 - 5;
-
-  let widthClass = "w-full sm:w-[48%] md:w-auto md:max-w-sm";
-
-  if (messageLength < 40) {
-    widthClass = "w-full sm:w-[31%] md:w-auto md:max-w-[200px]";
-  } else if (messageLength > 150) {
-    widthClass = "w-full sm:w-[98%] md:w-auto md:max-w-md";
-  } else {
-    if (rand < 0.5) widthClass = "w-full sm:w-[48%] md:w-auto md:max-w-xs";
-    else widthClass = "w-full sm:w-[48%] md:w-auto md:max-w-[300px]";
-  }
-
-  return { rotate, x, widthClass };
+  
+  // Mobile: Full width
+  const mobileClass = "w-full";
+  
+  // Desktop: specific widths
+  if (messageLength < 40) return `${mobileClass} md:min-w-[300px] md:w-[300px]`;
+  if (messageLength > 180) return `${mobileClass} md:min-w-[500px] md:w-[500px]`;
+  
+  if (rand < 0.33) return `${mobileClass} md:min-w-[350px] md:w-[350px]`;
+  if (rand < 0.66) return `${mobileClass} md:min-w-[420px] md:w-[420px]`;
+  return `${mobileClass} md:min-w-[460px] md:w-[460px]`;
 }
 
 type Props = {
@@ -67,6 +61,7 @@ type Props = {
   loadMore: () => void;
   hasMore: boolean;
   isSearching: boolean;
+  onRefresh?: () => Promise<void>;
 };
 
 function FeedbackCard({
@@ -78,12 +73,11 @@ function FeedbackCard({
   index: number;
   isNew: boolean;
 }) {
-  const { rotate, x, widthClass } = getCardVisuals(index, item.message.length);
+  const widthClasses = getCardWidth(index, item.message.length);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "50px 0px 0px 0px" });
 
   const displayName = item.name || "Anonymous";
-  const rating = Math.min(5, Math.max(1, item.rating ?? 5));
 
   return (
     <motion.div
@@ -99,8 +93,8 @@ function FeedbackCard({
             opacity: 1,
             scale: 1,
             y: 0,
-            x: x,
-            rotate: [0, rotate],
+            x: 0,
+            rotate: 0,
             filter: ["blur(10px)", "blur(0px)"],
             boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
           }
@@ -109,8 +103,8 @@ function FeedbackCard({
               opacity: 1,
               scale: 1,
               y: 0,
-              x: x,
-              rotate: rotate,
+              x: 0,
+              rotate: 0,
               filter: "blur(0px)",
               boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
             }
@@ -123,45 +117,29 @@ function FeedbackCard({
       }
       whileHover={{
         scale: 1.01,
-        y: 2,
+        y: -4, // Lift up instead of push down
         rotate: 0,
         zIndex: 10,
         transition: { duration: 0.18 },
       }}
-      className={`inline-block ${widthClass} ${index < 4 ? "mt-[10px]" : ""} cursor-pointer select-none mx-[1px] md:mx-3 relative rounded-2xl md:rounded-3xl border transition-all group overflow-visible
-        bg-white border-slate-200/80 text-slate-900 shadow-sm hover:shadow-md hover:border-slate-300
+      className={`h-auto md:h-[90%] ${widthClasses} flex-shrink-0 cursor-pointer select-none relative rounded-2xl md:rounded-3xl border transition-all group overflow-visible
+        bg-white border-slate-200/80 text-slate-900 shadow-sm hover:shadow-xl hover:border-slate-300 mx-0 mb-0 md:mb-0 md:mx-0
         dark:bg-brand-card-bg dark:border-brand-border/60 dark:text-brand-text dark:shadow-[0_8px_24px_rgba(0,0,0,0.65)] dark:hover:shadow-[0_14px_34px_rgba(0,0,0,0.8)]`}
     >
-      <div className="relative h-full">
-        <div className="relative z-10 p-2 md:p-5 flex flex-col h-full">
+      <div className="relative h-full whitespace-normal">
+        <div className="relative z-10 p-4 md:p-6 flex flex-col h-full">
           {/* Message */}
           <div className="mb-2 md:mb-4 space-y-1.5">
             <div className="inline-flex items-center justify-center rounded-full bg-slate-100 dark:bg-brand-surface-2/80 text-slate-600 dark:text-brand-text/80 w-7 h-7 md:w-8 md:h-8 mb-0.5">
               <Quote size={13} className="md:w-[15px] md:h-[15px]" />
             </div>
-            <p className="text-[11px] sm:text-sm md:text-[15px] font-medium leading-relaxed md:leading-relaxed tracking-wide text-brand-text line-clamp-6">
+            <p className="text-[15px] leading-normal md:text-[15px] font-medium md:leading-relaxed tracking-wide text-brand-text break-words whitespace-normal font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
               {renderMessage(item.message)}
             </p>
           </div>
 
           <div className="mt-auto pt-1 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-0.5 flex-shrink-0">
-              {Array.from({ length: 5 }).map((_, i) => {
-                const filled = i < rating;
-                return (
-                  <Star
-                    key={i}
-                    size={12}
-                    className={
-                      filled
-                        ? "text-amber-400 fill-amber-400"
-                        : "text-slate-300 dark:text-brand-border/70"
-                    }
-                  />
-                );
-              })}
-            </div>
-            <span className="text-[9px] md:text-xs font-medium text-brand-muted text-right leading-snug">
+            <span className="text-xs md:text-[13px] font-medium text-brand-muted text-right leading-snug ml-auto">
               — {displayName}
             </span>
           </div>
@@ -177,6 +155,7 @@ export default function FeedbackWall({
   loadMore,
   hasMore,
   isSearching,
+  onRefresh,
 }: Props) {
   if (items.length === 0) {
     if (isSearching) {
@@ -211,20 +190,48 @@ export default function FeedbackWall({
     );
   }
 
+  const pullDownConfig = onRefresh ? {
+    pullDownToRefresh: true,
+    pullDownToRefreshThreshold: 80,
+    refreshFunction: onRefresh,
+    pullDownToRefreshContent: (
+      <div className="w-full h-16 flex items-center justify-center z-10 relative md:hidden">
+        <div className="flex items-center gap-2 text-slate-500 bg-white/80 dark:bg-black/80 px-4 py-2 rounded-full shadow-sm border border-slate-200/50 dark:border-white/10 transition-transform duration-200 ease-out scale-95 opacity-80">
+          <ArrowDown className="h-4 w-4 animate-bounce text-brand-primary" />
+          <span className="text-sm font-medium">Pull down to refresh</span>
+        </div>
+      </div>
+    ),
+    releaseToRefreshContent: (
+      <div className="w-full h-16 flex items-center justify-center z-10 relative md:hidden">
+        <div className="flex items-center gap-2 text-brand-primary bg-white/90 dark:bg-black/90 px-4 py-2 rounded-full shadow-md border border-brand-primary/20 transition-all duration-200 scale-100">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className="text-sm font-medium">Updating feed...</span>
+        </div>
+      </div>
+    )
+  } : {};
+
   return (
     <div
       id="scrollableDiv"
-      className="fixed inset-0 overflow-y-auto pt-24 pb-20 px-4 md:px-8"
+      className="fixed inset-0 pt-[72px] md:pt-[72px] pb-0 px-4 md:px-8 mt-0 overflow-y-auto md:overflow-x-auto md:overflow-y-visible scroll-smooth"
+      style={{
+        WebkitOverflowScrolling: 'touch',
+      }}
     >
       <InfiniteScroll
         dataLength={items.length}
         next={loadMore}
         hasMore={hasMore}
         loader={
-          <h4 className="w-full text-center text-slate-400 py-4">Loading...</h4>
+          <div className="flex-shrink-0 w-full h-20 md:h-full md:w-[100px] flex items-center justify-center">
+            <h4 className="text-slate-400">Loading...</h4>
+          </div>
         }
         scrollableTarget="scrollableDiv"
-        className="mx-auto max-w-[1920px] flex flex-wrap justify-center items-start content-start gap-4 sm:gap-6 md:gap-8 pb-10" // removed mt-10, handled by parent pt
+        className="flex flex-col md:flex-row md:flex-nowrap md:items-start pt-6 md:pt-4 w-full md:min-w-full md:w-max md:mx-auto h-auto md:h-full pb-32 md:pb-10 gap-x-4 gap-y-6 md:gap-y-0" 
+        {...pullDownConfig}
       >
         {items.map((item, index) => (
           <FeedbackCard

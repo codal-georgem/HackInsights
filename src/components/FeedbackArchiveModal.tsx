@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Search } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import type { FeedbackItem } from "./FeedbackWall";
 
 type Props = {
@@ -17,6 +17,43 @@ export default function FeedbackArchiveModal({
   items,
 }: Props) {
   const [search, setSearch] = useState("");
+  // Ref to store the element that triggered the modal
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      triggerRef.current = document.activeElement as HTMLElement;
+    } else if (triggerRef.current) {
+      triggerRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = Array.from(
+          modalRef.current.querySelectorAll<HTMLElement>(
+            "button, input, [tabindex]:not([tabindex='-1'])"
+          )
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first?.focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   const filteredItems = useMemo(() => {
     if (!search.trim()) return items;
@@ -40,26 +77,31 @@ export default function FeedbackArchiveModal({
 
         {/* Modal Content */}
         <motion.div
+            ref={modalRef}
+           role="dialog"
+          aria-modal="true"
+          aria-label="Feedback Archive"
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden rounded-[2rem] bg-white dark:bg-brand-surface border border-white/20 dark:border-brand-border/50 shadow-2xl"
+          className="relative w-full max-w-5xl h-[85vh] sm:h-auto sm:max-h-[85vh] flex flex-col overflow-hidden rounded-[2rem] bg-white dark:bg-brand-surface border border-white/20 dark:border-brand-border/50 shadow-2xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-brand-border p-6 bg-white/50 dark:bg-brand-surface/50 backdrop-blur-md sticky top-0 z-10">
-            <div>
-              <h2 className="text-2xl font-bold text-brand-text">
+          <div className="flex items-center justify-between border-b border-brand-border p-4 sm:p-6 bg-white/50 dark:bg-brand-surface/50 backdrop-blur-md sticky top-0 z-10 w-full">
+            <div className="pr-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-brand-text truncate max-w-[200px] sm:max-w-none">
                 Feedback Archive 📂
               </h2>
-              <p className="text-brand-muted text-sm">
+              <p className="text-brand-muted text-xs sm:text-sm">
                 Total {items.length} thoughts collected
               </p>
             </div>
             <button
               onClick={onClose}
-              className="rounded-full bg-black/5 dark:bg-white/10 p-2 text-brand-text hover:bg-black/10 dark:hover:bg-white/20 transition-colors"
+              aria-label="Close modal"
+              className="rounded-full bg-black/5 dark:bg-white/10 p-1.5 sm:p-2 text-brand-text hover:bg-black/10 dark:hover:bg-white/20 transition-colors z-50 focus:outline-none focus:ring-2 focus:ring-brand-primary shrink-0"
             >
-              <X size={24} />
+              <X size={20} className="sm:w-6 sm:h-6" />
             </button>
           </div>
 

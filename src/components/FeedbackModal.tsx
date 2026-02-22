@@ -2,22 +2,32 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Star } from "lucide-react";
+import { X, Send } from "lucide-react";
 import FeedbackEditor from "./FeedbackEditor";
 
 type Props = {
   onClose: () => void;
-  onSuccess: (message: string, name: string | undefined, rating: number) => void;
+  onSuccess: (message: string, name: string | undefined) => void;
 };
 
 export default function FeedbackModal({ onClose, onSuccess }: Props) {
   const [markdown, setMarkdown] = useState("");
   const [name, setName] = useState("");
   const [charCount, setCharCount] = useState(0);
-   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Store the element that had focus when the modal opened
+    triggerRef.current = document.activeElement as HTMLElement;
+
+    // Return focus when modal closes
+    return () => {
+        triggerRef.current?.focus();
+    };
+  }, []);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -52,13 +62,13 @@ export default function FeedbackModal({ onClose, onSuccess }: Props) {
       const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: markdown.trim(), name: name.trim() || undefined, rating }),
+        body: JSON.stringify({ message: markdown.trim(), name: name.trim() || undefined }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error((data as { error?: string }).error ?? "Something went wrong.");
       }
-      onSuccess(markdown.trim(), name.trim() || undefined, rating);
+      onSuccess(markdown.trim(), name.trim() || undefined);
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -94,32 +104,33 @@ export default function FeedbackModal({ onClose, onSuccess }: Props) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative w-full max-w-lg overflow-hidden rounded-[2rem] bg-white/95 dark:bg-brand-surface/95 border border-slate-100/80 dark:border-brand-border shadow-[0_20px_60px_rgba(15,23,42,0.18)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.85)] text-slate-900 dark:text-brand-text"
+          className="relative flex flex-col w-full max-w-lg max-h-[90vh] overflow-hidden rounded-[2rem] bg-white/95 dark:bg-brand-surface/95 border border-slate-100/80 dark:border-brand-border shadow-[0_20px_60px_rgba(15,23,42,0.18)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.85)] text-slate-900 dark:text-brand-text"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Decorative Header */}
-          <div className="relative h-24 w-full overflow-hidden bg-brand-primary">
+          <div className="shrink-0 relative h-24 w-full overflow-hidden bg-brand-primary">
             <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
             <div className="absolute inset-0 bg-gradient-to-r from-brand-primary via-purple-600 to-brand-primary animated-gradient opacity-90" />
             
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 rounded-full bg-black/20 p-2 text-white hover:bg-black/30 transition-colors backdrop-blur-sm"
+              aria-label="Close modal"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 rounded-full bg-black/20 p-1.5 sm:p-2 text-white hover:bg-black/30 transition-colors backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white"
             >
-              <X size={20} />
+              <X size={18} className="sm:w-5 sm:h-5" />
             </button>
-            <div className="absolute bottom-5 left-8 z-10">
-              <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2 drop-shadow-md">
+            <div className="absolute bottom-4 left-4 sm:bottom-5 sm:left-8 z-10 pr-12 sm:pr-0">
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2 drop-shadow-md">
                 <span>Hackathon Vibes</span>
-                <span className="text-xl">🎤</span>
+                <span className="text-lg sm:text-xl">🎤</span>
               </h2>
-              <p className="text-indigo-100 text-sm font-medium drop-shadow-sm mt-0.5">
+              <p className="text-indigo-100 text-xs sm:text-sm font-medium drop-shadow-sm mt-0.5">
                 Share your experience the good, the bad, & the epic.
               </p>
             </div>
           </div>
 
-          <div className="p-6 sm:p-8 bg-gradient-to-b from-white to-slate-50 dark:from-brand-surface dark:to-brand-surface-2">
+          <div className="flex-1 overflow-y-auto p-6 sm:p-8 bg-gradient-to-b from-white to-slate-50 dark:from-brand-surface dark:to-brand-surface-2">
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               
               <div className="space-y-1.5">
@@ -152,35 +163,6 @@ export default function FeedbackModal({ onClose, onSuccess }: Props) {
                     What did you enjoy? What could be better?
                   </span>
                 </label>
-                {/* Rating */}
-                <div className="flex items-center justify-between px-1 pt-1">
-                  <span className="text-[11px] font-medium text-slate-500 dark:text-brand-muted">
-                    Your rating
-                  </span>
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => {
-                      const value = i + 1;
-                      const filled = value <= rating;
-                      return (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => setRating(value)}
-                          className="p-0.5 rounded-md hover:scale-110 transition-transform"
-                        >
-                          <Star
-                            size={16}
-                            className={
-                              filled
-                                ? "text-brand-primary fill-brand-primary drop-shadow-[0_0_8px_rgba(68,50,245,0.7)]"
-                                : "text-slate-300 dark:text-brand-border/70"
-                            }
-                          />
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
                 <div className="relative">
                   <FeedbackEditor
                     onChange={(md, count) => {

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node -e 'console.log(\"Node Arch:\", process.arch)' && next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -29,6 +29,7 @@
     "react-infinite-scroll-component": "^6.1.1",
     "react-is": "^19.2.4",
     "sanity": "^5.11.0",
+    "sharp": "^0.34.5",
     "styled-components": "^6.1.15"
   },
   "devDependencies": {

@@ -6,7 +6,6 @@ const QUERY = `*[_type == "feedback"] | order(submittedAt desc) {
   _id,
   message,
   name,
-  rating,
   submittedAt
 }`;
 

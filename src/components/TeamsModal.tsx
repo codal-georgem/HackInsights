@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Trophy, Users, Star, Medal, Sparkles } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { client } from "@/lib/sanity.config";
 
 type Team = {
@@ -40,9 +40,12 @@ const itemVariants = {
 export default function TeamsModal({ isOpen, onClose }: Props) {
     const [teams, setTeams] = useState<Team[]>([]);
     const [loading, setLoading] = useState(true);
+    const triggerRef = useRef<HTMLElement | null>(null);
 
     useEffect(() => {
         if (isOpen) {
+            triggerRef.current = document.activeElement as HTMLElement;
+
             const fetchTeams = async () => {
                 try {
                     const result = await client.fetch(`*[_type == "team"]`);
@@ -54,16 +57,36 @@ export default function TeamsModal({ isOpen, onClose }: Props) {
                 }
             };
             fetchTeams();
+        } else if (triggerRef.current) {
+            triggerRef.current.focus();
         }
     }, [isOpen]);
 
+    const modalRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         if (!isOpen) return;
-        const handleEsc = (e: KeyboardEvent) => {
+
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
+
+            if (e.key === "Tab" && modalRef.current) {
+                const focusable = Array.from(
+                    modalRef.current.querySelectorAll<HTMLElement>(
+                        "button, [contenteditable], [tabindex]:not([tabindex='-1'])"
+                    )
+                );
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault(); last?.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault(); first?.focus();
+                }
+            }
         };
-        window.addEventListener("keydown", handleEsc);
-        return () => window.removeEventListener("keydown", handleEsc);
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isOpen, onClose]);
 
     const sortedTeams = useMemo(() => {
@@ -90,6 +113,10 @@ export default function TeamsModal({ isOpen, onClose }: Props) {
                     />
 
                     <motion.div
+                        ref={modalRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Teams"
                         initial={{ opacity: 0, scale: 0.9, y: 30 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -114,12 +141,13 @@ export default function TeamsModal({ isOpen, onClose }: Props) {
 
                             <button
                                 onClick={onClose}
-                                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 rounded-full bg-black/20 dark:bg-white/10 p-2 text-white hover:bg-black/40 dark:hover:bg-white/20 transition-all backdrop-blur-md"
+                                aria-label="Close modal"
+                                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 rounded-full bg-black/20 dark:bg-white/10 p-1.5 sm:p-2 text-white hover:bg-black/40 dark:hover:bg-white/20 transition-all backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-white"
                             >
                                 <X size={18} className="sm:w-5 sm:h-5" />
                             </button>
 
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 pt-8 sm:p-4">
                                 <motion.div
                                     initial={{ y: -10, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
@@ -133,14 +161,13 @@ export default function TeamsModal({ isOpen, onClose }: Props) {
                                     initial={{ y: 10, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 0.1 }}
-                                    className="text-2xl sm:text-5xl font-black text-white tracking-tight drop-shadow-lg"
+                                    className="text-2xl sm:text-5xl font-black text-white tracking-tight drop-shadow-lg px-4"
                                 >
                                     Meet the Teams
                                 </motion.h2>
                             </div>
                         </div>
 
-                        {/* Content */}
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-8">
                             {loading ? (
                                 <div className="flex items-center justify-center h-full">

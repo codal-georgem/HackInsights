@@ -23,6 +23,26 @@ export default function FeedbackPageClient({ initialItems }: Props) {
 
   const [displayCount, setDisplayCount] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const refreshedItems = await client.fetch<FeedbackItem[]>(
+        `*[_type == "feedback"] | order(submittedAt desc) {
+          _id,
+          message,
+          name,
+          submittedAt
+        }`
+      );
+      setItems(refreshedItems);
+    } catch (error) {
+      console.error("Failed to refresh feedback:", error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     const subscription = client
@@ -80,13 +100,12 @@ export default function FeedbackPageClient({ initialItems }: Props) {
     };
   }, []);
 
-  function handleNewFeedback(message: string, name: string | undefined, rating: number) {
+  function handleNewFeedback(message: string, name: string | undefined) {
     const id = `optimistic-${Date.now()}`;
     const optimistic: FeedbackItem = {
       _id: id,
       message,
       name,
-      rating,
       submittedAt: new Date().toISOString(),
     };
 
@@ -169,6 +188,7 @@ export default function FeedbackPageClient({ initialItems }: Props) {
         loadMore={loadMore}
         hasMore={hasMore}
         isSearching={!!searchTerm}
+        onRefresh={handleRefresh}
       />
       <OrganizersSection />
       {/* ThemeToggle moved to Header */}

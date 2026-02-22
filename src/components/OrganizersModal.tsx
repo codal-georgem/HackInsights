@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, Trophy, Sparkles, Code2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 
 type Props = {
@@ -58,13 +58,38 @@ const itemVariants = {
 };
 
 export default function OrganizersModal({ isOpen, onClose }: Props) {
+    const triggerRef = useRef<HTMLElement | null>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    if (isOpen) {
+      triggerRef.current = document.activeElement as HTMLElement;
+    } else if (triggerRef.current) {
+        triggerRef.current.focus();
+    }
+
     if (!isOpen) return;
-    const handleEsc = (e: KeyboardEvent) => {
+
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = Array.from(
+          modalRef.current.querySelectorAll<HTMLElement>(
+            "button, [contenteditable], [tabindex]:not([tabindex='-1'])"
+          )
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first?.focus();
+        }
+      }
     };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   return (
@@ -80,6 +105,10 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
           />
 
           <motion.div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Organizers"
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -102,22 +131,22 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
                 }}
               />
 
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 pt-8 sm:p-4">
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 backdrop-blur-md border border-white/20"
+                  className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 sm:px-3 sm:py-1 backdrop-blur-md border border-white/20"
                 >
-                  <Trophy size={14} className="text-yellow-300" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-white">The Visionaries</span>
+                  <Trophy size={12} className="text-yellow-300 sm:w-3.5 sm:h-3.5" />
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white">The Visionaries</span>
                 </motion.div>
 
                 <motion.h2
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-sm"
+                  className="text-xl sm:text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-sm px-4"
                 >
                   Codal Hackathon 2026
                 </motion.h2>
@@ -128,9 +157,10 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
                   e.stopPropagation();
                   onClose();
                 }}
-                className="absolute top-4 right-4 z-30 rounded-full bg-black/20 dark:bg-white/10 p-2 text-white hover:bg-black/40 dark:hover:bg-white/20 transition-all backdrop-blur-md active:scale-90"
+                aria-label="Close modal"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 rounded-full bg-black/20 dark:bg-white/10 p-1.5 sm:p-2 text-white hover:bg-black/40 dark:hover:bg-white/20 transition-all backdrop-blur-md active:scale-90 focus:outline-none focus:ring-2 focus:ring-white"
               >
-                <X size={20} />
+                <X size={18} className="sm:w-5 sm:h-5" />
               </button>
             </div>
 
