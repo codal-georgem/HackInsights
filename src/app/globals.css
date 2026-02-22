@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* Prevent double scrollbars - let the app handle scrolling internally */
 html, body {
