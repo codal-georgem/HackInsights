@@ -13,7 +13,6 @@ export type FeedbackItem = {
   rating?: number;
 };
 
-// Parse **bold** and *italic* markers into React nodes
 function renderMessage(text: string): ReactNode {
   const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
   return parts.map((part, i) => {
@@ -36,7 +35,6 @@ function renderMessage(text: string): ReactNode {
   });
 }
 
-// Pseudo-random function for consistent visuals
 function pseudoRandom(seed: number) {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
@@ -47,20 +45,15 @@ function getCardVisuals(index: number, messageLength: number) {
   const rand = pseudoRandom(seed);
   // Random rotation between -2 and 2 degrees
   const rotate = rand * 4 - 2;
-  // Random horizontal offset between -5px and 5px
   const x = rand * 10 - 5;
 
-  // Dynamic width class based on random factor AND message length
-  // On mobile: Force smaller widths to fit more items. TARGET: 23% (4 per row) or 31% (3 per row)
-  // On desktop: Use the varying widths for masonry feel
-  let widthClass = "w-[23%] md:w-auto md:max-w-sm"; // default small
+  let widthClass = "w-[23%] md:w-auto md:max-w-sm";
 
   if (messageLength < 40) {
-    widthClass = "w-[23%] md:w-auto md:max-w-[200px]"; // 4 per row
+    widthClass = "w-[23%] md:w-auto md:max-w-[200px]";
   } else if (messageLength > 150) {
-    widthClass = "w-[48%] md:w-auto md:max-w-md"; // 2 per row
+    widthClass = "w-[48%] md:w-auto md:max-w-md";
   } else {
-    // Medium content
     if (rand < 0.5) widthClass = "w-[23%] md:w-auto md:max-w-xs";
     else widthClass = "w-[31%] md:w-auto md:max-w-[300px]";
   }
@@ -143,7 +136,6 @@ function FeedbackCard({
         <div className="relative z-10 p-2 md:p-5 flex flex-col h-full">
           {/* Message */}
           <div className="mb-2 md:mb-4 space-y-1.5">
-            {/* Quote Icon badge */}
             <div className="inline-flex items-center justify-center rounded-full bg-slate-100 dark:bg-brand-surface-2/80 text-slate-600 dark:text-brand-text/80 w-7 h-7 md:w-8 md:h-8 mb-0.5">
               <Quote size={13} className="md:w-[15px] md:h-[15px]" />
             </div>
@@ -152,7 +144,6 @@ function FeedbackCard({
             </p>
           </div>
 
-          {/* Footer: Stars + name inline */}
           <div className="mt-auto pt-1 flex items-center justify-between gap-2">
             <div className="flex items-center gap-0.5 flex-shrink-0">
               {Array.from({ length: 5 }).map((_, i) => {

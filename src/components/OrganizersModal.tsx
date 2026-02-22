@@ -62,7 +62,6 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -71,7 +70,6 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
           className="fixed inset-0 bg-black/60 backdrop-blur-sm"
         />
 
-        {/* Modal Structure */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -79,7 +77,6 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
           transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
           className="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-white dark:bg-[#0f111a] border border-white/20 dark:border-brand-border shadow-2xl"
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-20 rounded-full bg-black/20 dark:bg-white/10 p-2 text-white hover:bg-black/40 dark:hover:bg-white/20 transition-all backdrop-blur-md"
@@ -87,11 +84,8 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
             <X size={20} />
           </button>
 
-          {/* Header Section with Gradient */}
           <div className="relative h-32 sm:h-40 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-[#4432F5] via-[#6366f1] to-[#8b5cf6]" />
-            
-            {/* Animated Grid/Particles (Inline SVG pattern for noise) */}
             <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0ibm9uZSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMSIgZmlsbD0id2hpdGUiLz48L3N2Zz4=')]" />
             
             <motion.div 
@@ -133,7 +127,6 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
           <div className="relative px-4 pb-8 sm:px-8 -mt-8">
             {/* Thank You Note */}
             <motion.div 
-              initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}
               className="relative mx-auto max-w-xl text-center mb-8"
@@ -165,7 +158,7 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
             {/* Organizers Grid */}
             <div className="text-center mb-6">
               <h3 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-                Meet the Architects
+                Organizers
               </h3>
             </div>
             
@@ -200,10 +193,10 @@ export default function OrganizersModal({ isOpen, onClose }: Props) {
                     </div>
                   </div>
                   
-                  <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-brand-text group-hover:text-[#4432F5] transition-colors line-clamp-1 text-center">
+                  <h3 className="mt-1 text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-brand-primary dark:group-hover:text-brand-primary-light transition-colors text-center leading-snug">
                     {org.name}
                   </h3>
-                  <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-brand-muted text-center max-w-[120px] leading-tight mt-0.5">
+                  <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 text-center max-w-[140px] leading-tight mt-1">
                     {org.role}
                   </p>
                 </motion.div>

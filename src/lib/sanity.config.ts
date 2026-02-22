@@ -15,10 +15,6 @@ if (!token) {
   console.warn("Missing SANITY_API_TOKEN. Writes will fail.");
 }
 
-/**
- * Read-only client — safe to use in Server Components and API routes.
- * Uses the public CDN for fast, cached reads.
- */
 export const client = createClient({
   projectId,
   dataset,
@@ -26,15 +22,10 @@ export const client = createClient({
   useCdn: true,
 });
 
-/**
- * Write client — used only server-side (Route Handlers / Server Actions)
- * to submit new feedback documents.
- * NEVER expose SANITY_API_TOKEN to the browser.
- */
 export const writeClient = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: false, // writes must bypass CDN
+  useCdn: false,
   token,
 });

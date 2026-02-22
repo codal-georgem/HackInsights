@@ -10,7 +10,7 @@ const QUERY = `*[_type == "feedback"] | order(submittedAt desc) {
   submittedAt
 }`;
 
-export const revalidate = 30; // ISR: re-fetch from Sanity every 30 seconds
+export const revalidate = 30;
 
 export default async function Home() {
   const items: FeedbackItem[] = await client.fetch(QUERY);

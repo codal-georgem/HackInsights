@@ -14,19 +14,15 @@ type Props = {
 };
 
 export default function FeedbackPageClient({ initialItems }: Props) {
-  // Merge real items with dummy items for testing
   const [items, setItems] = useState<FeedbackItem[]>(initialItems);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOrganizersOpen, setIsOrganizersOpen] = useState(false);
   const [newestId, setNewestId] = useState<string | null>(null);
   
-  // Infinite Scroll & Search State
   const [displayCount, setDisplayCount] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Real-time updates from Sanity
   useEffect(() => {
-      // Listen for new feedback items
       const subscription = client
         .listen<FeedbackItem>(`*[_type == "feedback"]`, {}, { visibility: "query" })
         .subscribe((update) => {
@@ -37,34 +33,23 @@ export default function FeedbackPageClient({ initialItems }: Props) {
             if (!newItem) return;
 
             setItems((prev) => {
-              // Check if we already have this ID
               if (prev.some((item) => item._id === newItem._id)) return prev;
 
-              // Filter out any matching optimistic items
               const withoutOptimistic = prev.filter((p) => {
-                // Keep real items
                 if (!p._id.startsWith("optimistic-")) return true;
 
-                // For optimistic items, check if they match the new item
-                
-                // Compare message (normalized)
-                const pMsg = (p.message || "").trim().replace(/\s+/g, " "); // Normalize whitespace
+                const pMsg = (p.message || "").trim().replace(/\s+/g, " ");
                 const nMsg = (newItem.message || "").trim().replace(/\s+/g, " ");
-                if (pMsg !== nMsg) return true; // Message doesn't match, keep it
+                if (pMsg !== nMsg) return true;
 
-                // Compare name (normalized)
-                // Treat undefined/null/empty string as equivalent ("")
                 const pName = (p.name || "").trim();
                 const nName = (newItem.name || "").trim();
-                if (pName !== nName) return true; // Name doesn't match, keep it
+                if (pName !== nName) return true;
 
-                // Compare timestamp (loose)
                 const pTime = new Date(p.submittedAt).getTime();
                 const nTime = new Date(newItem.submittedAt || 0).getTime();
                 const diff = Math.abs(pTime - nTime);
                 
-                // If it matches content closely and time loosely (within 5 mins), it's the same item.
-                // We want to remove it (return false) so it gets replaced by the real one.
                 if (diff < 300000) return false;
 
                 return true;
@@ -147,7 +132,6 @@ export default function FeedbackPageClient({ initialItems }: Props) {
       scrollableDiv.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Extended to match card-launch animation duration
     setTimeout(() => setNewestId(null), 900);
   }
 
@@ -160,12 +144,10 @@ export default function FeedbackPageClient({ initialItems }: Props) {
     );
   }, [items, searchTerm]);
 
-  // Only show the subset for infinite scroll
   const visibleItems = filteredItems.slice(0, displayCount);
   const hasMore = visibleItems.length < filteredItems.length;
 
   const loadMore = () => {
-    // Artificial delay for better UX if needed, or just set immediately
     setTimeout(() => {
       setDisplayCount(prev => prev + 20);
     }, 500);

@@ -23,7 +23,6 @@ export default function Header({ onAddClick, onOrganizersClick, onSearch }: Prop
     <header
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b border-brand-border bg-brand-bg/85 px-4 md:px-8 py-4 backdrop-blur-md transition-all"
     >
-      {/* Brand */}
       <a 
         href="https://codal.com/"
         target="_blank"
@@ -46,7 +45,6 @@ export default function Header({ onAddClick, onOrganizersClick, onSearch }: Prop
         </div>
       </a>
 
-      {/* Search Bar */}
       <div className="flex-1 max-w-md mx-2 md:mx-4">
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
