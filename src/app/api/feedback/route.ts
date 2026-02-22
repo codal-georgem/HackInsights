@@ -10,9 +10,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
-  const message = (body as any).message;
-  const name = (body as any).name;
-  const rating = (body as any).rating;
+  interface FeedbackBody {
+    message?: string;
+    name?: string;
+    rating?: number;
+  }
+
+  const typedBody = body as FeedbackBody;
+  const message = typedBody.message;
+  const name = typedBody.name;
+  const rating = typedBody.rating;
 
   if (typeof message !== "string" || message.trim().length === 0) {
     return NextResponse.json({ error: "Message is required." }, { status: 400 });
