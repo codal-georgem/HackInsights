@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy-studio": "sanity deploy"
+    "deploy-studio": "npx sanity deploy"
   },
   "dependencies": {
     "@sanity/client": "^7.15.0",
