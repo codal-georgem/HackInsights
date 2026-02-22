@@ -1,17 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { Plus, Users, Search, Moon, Sun } from "lucide-react";
+import { Plus, Users, Search, Moon, Sun, Trophy } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
-type Props = { 
+type Props = {
   onAddClick: () => void;
   onOrganizersClick: () => void;
+  onTeamsClick: () => void;
   onSearch: (term: string) => void;
 };
 
-export default function Header({ onAddClick, onOrganizersClick, onSearch }: Props) {
+export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, onSearch }: Props) {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -23,7 +24,7 @@ export default function Header({ onAddClick, onOrganizersClick, onSearch }: Prop
     <header
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b border-brand-border bg-brand-bg/85 px-4 md:px-8 py-4 backdrop-blur-md transition-all"
     >
-      <a 
+      <a
         href="https://codal.com/"
         target="_blank"
         rel="noopener noreferrer"
@@ -78,13 +79,23 @@ export default function Header({ onAddClick, onOrganizersClick, onSearch }: Prop
         )}
 
         <button
+          onClick={onTeamsClick}
+          aria-label="View Teams"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-brand-primary backdrop-blur-sm transition-all hover:bg-white active:scale-95
+            dark:bg-brand-surface-2 dark:text-brand-primary-light dark:border-brand-border dark:hover:bg-brand-surface sm:w-auto sm:px-3 sm:gap-2"
+        >
+          <Trophy size={16} />
+          <span className="hidden sm:inline text-xs font-semibold">Teams</span>
+        </button>
+
+        <button
           onClick={onOrganizersClick}
           aria-label="View Organizers"
           className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
             dark:bg-brand-surface-2 dark:text-brand-text dark:border-brand-border dark:hover:bg-brand-surface sm:w-auto sm:px-3 sm:gap-2"
         >
           <Users size={16} />
-          <span className="hidden sm:inline text-xs font-semibold">Squad</span>
+          <span className="hidden sm:inline text-xs font-semibold">Organizers</span>
         </button>
 
         <button
@@ -94,12 +105,12 @@ export default function Header({ onAddClick, onOrganizersClick, onSearch }: Prop
         >
           {/* Animated background sheen */}
           <span className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-none" />
-          
+
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_10px_white]" />
           </span>
-          
+
           <Plus size={14} strokeWidth={3} className="transition-transform group-hover:rotate-90" />
           <span>Mic Drop</span>
         </button>

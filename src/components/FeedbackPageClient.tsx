@@ -5,6 +5,7 @@ import { client } from "@/lib/sanity.config";
 import FeedbackWall, { type FeedbackItem } from "./FeedbackWall";
 import FeedbackModal from "./FeedbackModal";
 import OrganizersModal from "./OrganizersModal";
+import TeamsModal from "./TeamsModal";
 import Header from "./Header";
 import OrganizersSection from "./OrganizersSection";
 import { triggerCelebration } from "./CelebrationBurst";
@@ -17,61 +18,62 @@ export default function FeedbackPageClient({ initialItems }: Props) {
   const [items, setItems] = useState<FeedbackItem[]>(initialItems);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOrganizersOpen, setIsOrganizersOpen] = useState(false);
+  const [isTeamsOpen, setIsTeamsOpen] = useState(false);
   const [newestId, setNewestId] = useState<string | null>(null);
-  
+
   const [displayCount, setDisplayCount] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-      const subscription = client
-        .listen<FeedbackItem>(`*[_type == "feedback"]`, {}, { visibility: "query" })
-        .subscribe((update) => {
-          if (update.type !== "mutation") return;
+    const subscription = client
+      .listen<FeedbackItem>(`*[_type == "feedback"]`, {}, { visibility: "query" })
+      .subscribe((update) => {
+        if (update.type !== "mutation") return;
 
-          if (update.transition === "appear") {
-            const newItem = update.result;
-            if (!newItem) return;
+        if (update.transition === "appear") {
+          const newItem = update.result;
+          if (!newItem) return;
 
-            setItems((prev) => {
-              if (prev.some((item) => item._id === newItem._id)) return prev;
+          setItems((prev) => {
+            if (prev.some((item) => item._id === newItem._id)) return prev;
 
-              const withoutOptimistic = prev.filter((p) => {
-                if (!p._id.startsWith("optimistic-")) return true;
+            const withoutOptimistic = prev.filter((p) => {
+              if (!p._id.startsWith("optimistic-")) return true;
 
-                const pMsg = (p.message || "").trim().replace(/\s+/g, " ");
-                const nMsg = (newItem.message || "").trim().replace(/\s+/g, " ");
-                if (pMsg !== nMsg) return true;
+              const pMsg = (p.message || "").trim().replace(/\s+/g, " ");
+              const nMsg = (newItem.message || "").trim().replace(/\s+/g, " ");
+              if (pMsg !== nMsg) return true;
 
-                const pName = (p.name || "").trim();
-                const nName = (newItem.name || "").trim();
-                if (pName !== nName) return true;
+              const pName = (p.name || "").trim();
+              const nName = (newItem.name || "").trim();
+              if (pName !== nName) return true;
 
-                const pTime = new Date(p.submittedAt).getTime();
-                const nTime = new Date(newItem.submittedAt || 0).getTime();
-                const diff = Math.abs(pTime - nTime);
-                
-                if (diff < 300000) return false;
+              const pTime = new Date(p.submittedAt).getTime();
+              const nTime = new Date(newItem.submittedAt || 0).getTime();
+              const diff = Math.abs(pTime - nTime);
 
-                return true;
-              });
+              if (diff < 300000) return false;
 
-              return [newItem, ...withoutOptimistic];
+              return true;
             });
 
-            setNewestId(newItem._id);
-            setTimeout(() => setNewestId(null), 900);
-          } else if (update.transition === "disappear") {
-            const documentId = update.documentId;
-            setItems((prev) => prev.filter((item) => item._id !== documentId));
-          } else if (update.transition === "update") {
-             const updatedItem = update.result;
-             if (!updatedItem) return;
-             
-             setItems((prev) => prev.map((item) => 
-               item._id === updatedItem._id ? updatedItem : item
-             ));
-          }
-        });
+            return [newItem, ...withoutOptimistic];
+          });
+
+          setNewestId(newItem._id);
+          setTimeout(() => setNewestId(null), 900);
+        } else if (update.transition === "disappear") {
+          const documentId = update.documentId;
+          setItems((prev) => prev.filter((item) => item._id !== documentId));
+        } else if (update.transition === "update") {
+          const updatedItem = update.result;
+          if (!updatedItem) return;
+
+          setItems((prev) => prev.map((item) =>
+            item._id === updatedItem._id ? updatedItem : item
+          ));
+        }
+      });
 
     return () => {
       subscription.unsubscribe();
@@ -107,9 +109,9 @@ export default function FeedbackPageClient({ initialItems }: Props) {
         // Time match (very recent)
         // Check if the item submittedAt is close to NOW
         const pTime = new Date(p.submittedAt).getTime();
-        const nTime = new Date().getTime(); 
+        const nTime = new Date().getTime();
         const diff = Math.abs(pTime - nTime);
-        
+
         // If it arrived within last 60 seconds, it's definitely the one we just sent
         return diff < 60000;
       });
@@ -124,7 +126,7 @@ export default function FeedbackPageClient({ initialItems }: Props) {
 
     // Reset search so the new item is visible immediately if user was searching
     setSearchTerm("");
-    
+
     // Scroll to top to ensure user sees their new feedback
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const scrollableDiv = document.getElementById('scrollableDiv');
@@ -138,8 +140,8 @@ export default function FeedbackPageClient({ initialItems }: Props) {
   const filteredItems = useMemo(() => {
     if (!searchTerm) return items;
     const lowerTerm = searchTerm.toLowerCase();
-    return items?.filter(item => 
-      item.message.toLowerCase().includes(lowerTerm) || 
+    return items?.filter(item =>
+      item.message.toLowerCase().includes(lowerTerm) ||
       (item.name && item.name.toLowerCase().includes(lowerTerm))
     );
   }, [items, searchTerm]);
@@ -155,14 +157,15 @@ export default function FeedbackPageClient({ initialItems }: Props) {
 
   return (
     <>
-      <Header 
+      <Header
         onAddClick={() => setIsModalOpen(true)}
         onOrganizersClick={() => setIsOrganizersOpen(true)}
+        onTeamsClick={() => setIsTeamsOpen(true)}
         onSearch={setSearchTerm}
       />
-      <FeedbackWall 
-        items={visibleItems} 
-        newestId={newestId} 
+      <FeedbackWall
+        items={visibleItems}
+        newestId={newestId}
         loadMore={loadMore}
         hasMore={hasMore}
         isSearching={!!searchTerm}
@@ -170,9 +173,14 @@ export default function FeedbackPageClient({ initialItems }: Props) {
       <OrganizersSection />
       {/* ThemeToggle moved to Header */}
 
-      <OrganizersModal 
+      <OrganizersModal
         isOpen={isOrganizersOpen}
         onClose={() => setIsOrganizersOpen(false)}
+      />
+
+      <TeamsModal
+        isOpen={isTeamsOpen}
+        onClose={() => setIsTeamsOpen(false)}
       />
 
       {isModalOpen && (
