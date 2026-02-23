@@ -42,16 +42,20 @@ function pseudoRandom(seed: number) {
 function getCardWidth(index: number, messageLength: number) {
   const seed = index * 1337;
   const rand = pseudoRandom(seed);
-  
+
   // Mobile: Almost full width to show shadows
   const mobileClass = "w-[calc(100%-2px)] mx-auto";
-  
+
   // Desktop: specific widths
-  if (messageLength < 40) return `${mobileClass} md:min-w-[300px] md:w-[300px] md:mx-0`;
-  if (messageLength > 180) return `${mobileClass} md:min-w-[500px] md:w-[500px] md:mx-0`;
-  
-  if (rand < 0.33) return `${mobileClass} md:min-w-[350px] md:w-[350px] md:mx-0`;
-  if (rand < 0.66) return `${mobileClass} md:min-w-[420px] md:w-[420px] md:mx-0`;
+  if (messageLength < 40)
+    return `${mobileClass} md:min-w-[300px] md:w-[300px] md:mx-0`;
+  if (messageLength > 180)
+    return `${mobileClass} md:min-w-[500px] md:w-[500px] md:mx-0`;
+
+  if (rand < 0.33)
+    return `${mobileClass} md:min-w-[350px] md:w-[350px] md:mx-0`;
+  if (rand < 0.66)
+    return `${mobileClass} md:min-w-[420px] md:w-[420px] md:mx-0`;
   return `${mobileClass} md:min-w-[460px] md:w-[460px] md:mx-0`;
 }
 
@@ -69,10 +73,10 @@ function getCardStyle(index: number) {
   const rand = pseudoRandom(seed);
   const rotate = (rand - 0.5) * 4; // -2 to +2 degrees
   const translateY = (pseudoRandom(seed + 1) - 0.5) * 20; // -10px to +10px
-  
+
   return {
     rotate,
-    translateY
+    translateY,
   };
 }
 
@@ -80,7 +84,7 @@ function FeedbackCard({
   item,
   index,
   isNew,
-  isMobile
+  isMobile,
 }: {
   item: FeedbackItem;
   index: number;
@@ -89,7 +93,7 @@ function FeedbackCard({
 }) {
   const widthClasses = getCardWidth(index, item.message.length);
   const { rotate, translateY } = getCardStyle(index);
-  
+
   // Disable scattering on mobile
   const effectiveRotate = isMobile ? 0 : rotate;
   const effectiveTranslateY = isMobile ? 0 : translateY;
@@ -110,24 +114,24 @@ function FeedbackCard({
       animate={
         isNew
           ? {
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            x: 0,
-            rotate: 0,
-            filter: ["blur(10px)", "blur(0px)"],
-            boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
-          }
-          : isInView
-            ? {
               opacity: 1,
               scale: 1,
               y: 0,
               x: 0,
-              rotate: effectiveRotate, // Apply scattered rotation
-              filter: "blur(0px)",
+              rotate: 0,
+              filter: ["blur(10px)", "blur(0px)"],
               boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
             }
+          : isInView
+            ? {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                x: 0,
+                rotate: effectiveRotate, // Apply scattered rotation
+                filter: "blur(0px)",
+                boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
+              }
             : {}
       }
       style={{
@@ -147,7 +151,7 @@ function FeedbackCard({
       }}
       className={`h-auto ${widthClasses} shrink-0 cursor-pointer select-none relative rounded-2xl md:rounded-3xl border transition-all group overflow-visible
         bg-white border-slate-200/80 text-slate-900 shadow-sm hover:shadow-md md:hover:shadow-xl hover:border-slate-300
-        dark:bg-brand-card-bg dark:border-brand-border/60 dark:text-brand-text dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)] dark:md:shadow-[0_8px_24px_rgba(0,0,0,0.65)] dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.6)] dark:md:hover:shadow-[0_14px_34px_rgba(0,0,0,0.8)]`}
+        dark:bg-gradient-to-br dark:from-[#1e293b] dark:to-[#0f172a] dark:border-white/10 dark:text-slate-200 dark:shadow-[0_4px_12px_rgba(0,0,0,0.5)] dark:hover:border-brand-primary/50 dark:hover:shadow-[0_0_20px_rgba(var(--c-primary),0.15)]`}
     >
       <div className="relative h-full whitespace-normal">
         <div className="relative z-10 p-4 md:p-6 flex flex-col h-full">
@@ -187,10 +191,10 @@ export default function FeedbackWall({
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     // Initial check
     checkMobile();
-    
+
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
@@ -228,34 +232,36 @@ export default function FeedbackWall({
     );
   }
 
-  const pullDownConfig = onRefresh ? {
-    pullDownToRefresh: true,
-    pullDownToRefreshThreshold: 80,
-    refreshFunction: onRefresh,
-    pullDownToRefreshContent: (
-      <div className="w-full h-16 flex items-center justify-center z-10 relative md:hidden">
-        <div className="flex items-center gap-2 text-slate-500 bg-white/80 dark:bg-black/80 px-4 py-2 rounded-full shadow-sm border border-slate-200/50 dark:border-white/10 transition-transform duration-200 ease-out scale-95 opacity-80">
-          <ArrowDown className="h-4 w-4 animate-bounce text-brand-primary" />
-          <span className="text-sm font-medium">Pull down to refresh</span>
-        </div>
-      </div>
-    ),
-    releaseToRefreshContent: (
-      <div className="w-full h-16 flex items-center justify-center z-10 relative md:hidden">
-        <div className="flex items-center gap-2 text-brand-primary bg-white/90 dark:bg-black/90 px-4 py-2 rounded-full shadow-md border border-brand-primary/20 transition-all duration-200 scale-100">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-sm font-medium">Updating feed...</span>
-        </div>
-      </div>
-    )
-  } : {};
+  const pullDownConfig = onRefresh
+    ? {
+        pullDownToRefresh: true,
+        pullDownToRefreshThreshold: 80,
+        refreshFunction: onRefresh,
+        pullDownToRefreshContent: (
+          <div className="w-full h-16 flex items-center justify-center z-10 relative md:hidden">
+            <div className="flex items-center gap-2 text-slate-500 bg-white/80 dark:bg-black/80 px-4 py-2 rounded-full shadow-sm border border-slate-200/50 dark:border-white/10 transition-transform duration-200 ease-out scale-95 opacity-80">
+              <ArrowDown className="h-4 w-4 animate-bounce text-brand-primary" />
+              <span className="text-sm font-medium">Pull down to refresh</span>
+            </div>
+          </div>
+        ),
+        releaseToRefreshContent: (
+          <div className="w-full h-16 flex items-center justify-center z-10 relative md:hidden">
+            <div className="flex items-center gap-2 text-brand-primary bg-white/90 dark:bg-black/90 px-4 py-2 rounded-full shadow-md border border-brand-primary/20 transition-all duration-200 scale-100">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm font-medium">Updating feed...</span>
+            </div>
+          </div>
+        ),
+      }
+    : {};
 
   return (
     <div
       id="scrollableDiv"
-      className="fixed inset-0 pt-[72px] pb-0 px-4 md:px-8 mt-0 overflow-y-auto scroll-smooth"
+      className="fixed inset-0 pt-18 pb-0 px-4 md:px-8 mt-0 overflow-y-auto scroll-smooth"
       style={{
-        WebkitOverflowScrolling: 'touch',
+        WebkitOverflowScrolling: "touch",
       }}
     >
       <InfiniteScroll
@@ -263,12 +269,12 @@ export default function FeedbackWall({
         next={loadMore}
         hasMore={hasMore}
         loader={
-          <div className="flex-shrink-0 w-full h-20 flex items-center justify-center">
+          <div className="shrink-0 w-full h-20 flex items-center justify-center">
             <h4 className="text-slate-400">Loading...</h4>
           </div>
         }
         scrollableTarget="scrollableDiv"
-        className="flex flex-col md:flex-row md:flex-wrap md:justify-center md:items-center pt-6 md:pt-12 w-full max-w-7xl mx-auto h-auto pb-32 md:pb-20 gap-y-4 md:gap-y-8 gap-x-8"
+        className="flex flex-col md:flex-row md:flex-wrap md:justify-center md:items-center pt-6 md:pt-12 w-full mx-auto h-auto pb-32 md:pb-20 gap-y-4 md:gap-y-8 gap-x-8"
         {...pullDownConfig}
       >
         {items.map((item, index) => (

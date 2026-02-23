@@ -22,7 +22,7 @@ export function ThemeToggle() {
   return (
     <motion.button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="fixed bottom-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-brand-surface border border-brand-border text-brand-text shadow-lg hover:scale-110 active:scale-90 transition-all"
+      className="fixed bottom-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-brand-surface border border-brand-border text-brand-text shadow-lg hover:scale-110 active:scale-90 transition-all dark:bg-brand-surface-2 dark:border-brand-border dark:hover:bg-brand-border"
       whileHover={{ y: -2 }}
       aria-label="Toggle theme"
     >

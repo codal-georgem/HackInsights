@@ -27,7 +27,7 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
         onClick={() => setIsFlipped(!isFlipped)}
       >
         <motion.div
-          className="relative h-full w-full [transform-style:preserve-3d]"
+          className="relative h-full w-full transform-3d"
           animate={{ rotateY: isFlipped ? 180 : 0 }}
           transition={{
             duration: 0.6,
@@ -37,12 +37,12 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
           }}
         >
           {/* Front Face: Header + Organizers Grid */}
-          <div className="absolute inset-0 [backface-visibility:hidden] bg-white dark:bg-[#1a1d2d] rounded-lg sm:rounded-3xl shadow-xl border border-slate-100 dark:border-brand-border/50 flex flex-col overflow-hidden">
+          <div className="absolute inset-0 backface-hidden bg-white dark:bg-brand-surface rounded-lg sm:rounded-3xl shadow-xl border border-slate-100 dark:border-brand-border/50 flex flex-col overflow-hidden">
             {/* Header Section (Duplicated for Front) */}
             <div className="relative h-28 shrink-0 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#4432F5] via-[#6366f1] to-[#8b5cf6]" />
+              <div className="absolute inset-0 bg-linear-to-br from-[#4432F5] via-[#6366f1] to-[#8b5cf6]" />
               <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0ibm9uZSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMSIgZmlsbD0id2hpdGUiLz48L3N2Zz4=')]" />
-              
+
               <motion.div
                 animate={{
                   backgroundPosition: ["0% 0%", "100% 100%"],
@@ -66,7 +66,6 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
                 </h2>
               </div>
 
-
               <div
                 onClick={(e) => {
                   e.stopPropagation();
@@ -80,7 +79,7 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
               </div>
             </div>
 
-            <div className="flex-1 px-4 py-2 flex flex-col justify-between bg-white dark:bg-[#1a1d2d]">
+            <div className="flex-1 px-4 py-2 flex flex-col justify-between bg-white dark:bg-brand-surface">
               <div className="text-center mt-2">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
                   The Organizers
@@ -95,9 +94,9 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
                   >
                     <div className="relative mb-1.5 h-16 w-16">
                       <div
-                        className={`absolute -inset-1 rounded-full bg-gradient-to-br ${org.gradient} opacity-70 blur-md`}
+                        className={`absolute -inset-1 rounded-full bg-linear-to-br ${org.gradient} opacity-70 blur-md`}
                       />
-                      <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-white dark:border-[#1a1d2d] shadow-sm bg-slate-100 dark:bg-slate-800">
+                      <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-white dark:border-brand-border shadow-sm bg-slate-100 dark:bg-slate-800">
                         <Image
                           src={org.image}
                           alt={org.name}
@@ -111,7 +110,7 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
                     <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight">
                       {org.name}
                     </h3>
-                    <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5 max-w-[100px]">
+                    <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5 max-w-25">
                       {org.role}
                     </p>
                   </div>
@@ -125,12 +124,12 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
           </div>
 
           {/* Back Face: Header + Thank You Message */}
-          <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-white dark:bg-[#1a1d2d] rounded-lg sm:rounded-3xl shadow-xl border border-slate-100 dark:border-brand-border/50 flex flex-col overflow-hidden">
+          <div className="absolute inset-0 backface-hidden transform-[rotateY(180deg)] bg-white dark:bg-brand-surface rounded-lg sm:rounded-3xl shadow-xl border border-slate-100 dark:border-brand-border/50 flex flex-col overflow-hidden">
             {/* Header Section (Duplicated for Back) */}
             <div className="relative h-28 shrink-0 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#4432F5] via-[#6366f1] to-[#8b5cf6]" />
+              <div className="absolute inset-0 bg-linear-to-br from-[#4432F5] via-[#6366f1] to-[#8b5cf6]" />
               <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0ibm9uZSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMSIgZmlsbD0id2hpdGUiLz48L3N2Zz4=')]" />
-              
+
               <motion.div
                 animate={{
                   backgroundPosition: ["0% 0%", "100% 100%"],
@@ -167,8 +166,8 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
               </div>
             </div>
 
-            <div className="flex-1 p-6 flex flex-col items-center justify-center text-center bg-white dark:bg-[#1a1d2d]">
-              <div className="rounded-full bg-gradient-to-r from-brand-primary to-violet-600 p-3 shadow-lg ring-4 ring-white dark:ring-[#0f111a] mb-4">
+            <div className="flex-1 p-6 flex flex-col items-center justify-center text-center bg-white dark:bg-brand-surface">
+              <div className="rounded-full bg-linear-to-r from-brand-primary to-violet-600 p-3 shadow-lg ring-4 ring-white dark:ring-brand-border/50 mb-4">
                 <Heart
                   size={28}
                   className="text-white fill-white animate-pulse"
@@ -195,7 +194,7 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
                 />
               </div>
 
-                <p className="mt-auto pt-6 text-[10px] uppercase tracking-widest text-slate-400 flex items-center gap-1">
+              <p className="mt-auto pt-6 text-[10px] uppercase tracking-widest text-slate-400 flex items-center gap-1">
                 Tap to see organizers
               </p>
             </div>

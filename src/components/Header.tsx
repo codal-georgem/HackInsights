@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Plus, Users, Search, Moon, Sun, Trophy } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 
 type Props = {
   onAddClick: () => void;
@@ -12,7 +12,7 @@ type Props = {
   onSearch: (term: string) => void;
 };
 
-export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, onSearch }: Props) {
+const Header = memo(function Header({ onAddClick, onOrganizersClick, onTeamsClick, onSearch }: Props) {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -46,7 +46,7 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
         </div>
       </a>
 
-      <div className="order-last w-full mt-3 flex-none basis-full md:basis-auto md:order-none md:mt-0 md:w-auto md:flex-1 md:mx-4 max-w-md md:max-w-md mx-auto">
+      <div className="order-last w-full mt-3 flex-none basis-full md:basis-auto md:order-0 md:mt-0 md:w-auto md:flex-1 md:mx-4 max-w-md md:max-w-md mx-auto">
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-slate-400 dark:text-brand-muted group-focus-within:text-brand-primary dark:group-focus-within:text-brand-primary transition-colors" />
@@ -71,7 +71,7 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
-              dark:bg-brand-surface-2 dark:text-brand-text dark:border-brand-border dark:hover:bg-brand-surface"
+              dark:bg-brand-surface-2 dark:text-white dark:border-brand-border dark:hover:bg-brand-border/50 dark:hover:text-white"
             aria-label="Toggle theme"
           >
             {theme === "dark" ? <Sun size={14} className="sm:w-[16px] sm:h-[16px]" /> : <Moon size={14} className="sm:w-[16px] sm:h-[16px]" />}
@@ -82,7 +82,7 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
           onClick={onTeamsClick}
           aria-label="View Teams"
           className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-brand-primary backdrop-blur-sm transition-all hover:bg-white active:scale-95
-            dark:bg-brand-surface-2 dark:text-brand-primary-light dark:border-brand-border dark:hover:bg-brand-surface md:w-auto md:px-3 md:gap-2"
+            dark:bg-brand-surface-2 dark:text-white dark:border-brand-border dark:hover:bg-brand-border/50 md:w-auto md:px-3 md:gap-2"
         >
           <Trophy size={14} className="sm:w-[16px] sm:h-[16px]" />
           <span className="hidden md:inline text-xs font-semibold">Teams</span>
@@ -92,7 +92,7 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
           onClick={onOrganizersClick}
           aria-label="View Organizers"
           className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
-            dark:bg-brand-surface-2 dark:text-brand-text dark:border-brand-border dark:hover:bg-brand-surface md:w-auto md:px-3 md:gap-2"
+            dark:bg-brand-surface-2 dark:text-white dark:border-brand-border dark:hover:bg-brand-border/50 md:w-auto md:px-3 md:gap-2"
         >
           <Users size={14} className="sm:w-[16px] sm:h-[16px]" />
           <span className="hidden md:inline text-xs font-semibold">Organizers</span>
@@ -112,4 +112,6 @@ export default function Header({ onAddClick, onOrganizersClick, onTeamsClick, on
       </div>
     </header>
   );
-}
+});
+
+export default Header;

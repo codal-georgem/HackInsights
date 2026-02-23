@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { client } from "@/lib/sanity.config";
 import FeedbackWall, { type FeedbackItem } from "./FeedbackWall";
 import FeedbackModal from "./FeedbackModal";
@@ -24,6 +24,10 @@ export default function FeedbackPageClient({ initialItems }: Props) {
   const [displayCount, setDisplayCount] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleAddClick = useCallback(() => setIsModalOpen(true), []);
+  const handleOrganizersClick = useCallback(() => setIsOrganizersOpen(true), []);
+  const handleTeamsClick = useCallback(() => setIsTeamsOpen(true), []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -177,9 +181,9 @@ export default function FeedbackPageClient({ initialItems }: Props) {
   return (
     <>
       <Header
-        onAddClick={() => setIsModalOpen(true)}
-        onOrganizersClick={() => setIsOrganizersOpen(true)}
-        onTeamsClick={() => setIsTeamsOpen(true)}
+        onAddClick={handleAddClick}
+        onOrganizersClick={handleOrganizersClick}
+        onTeamsClick={handleTeamsClick}
         onSearch={setSearchTerm}
       />
       <FeedbackWall
