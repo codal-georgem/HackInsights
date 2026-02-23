@@ -112,7 +112,7 @@ export default function FeedbackModal({ onClose, onSuccess }: Props) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative flex flex-col w-full max-w-lg max-h-[85dvh] h-auto overflow-hidden rounded-lg sm:rounded-[2rem] bg-white/95 dark:bg-brand-surface/95 border border-slate-100/80 dark:border-brand-border shadow-[0_20px_60px_rgba(15,23,42,0.18)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.85)] text-slate-900 dark:text-brand-text"
+          className="relative flex flex-col w-full max-w-lg max-h-[85dvh] h-auto overflow-hidden rounded-lg sm:rounded-[2rem] bg-white/95 dark:bg-brand-surface border border-slate-100/80 dark:border-brand-border shadow-[0_20px_60px_rgba(15,23,42,0.18)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.6)] text-slate-900 dark:text-brand-text"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Decorative Header */}

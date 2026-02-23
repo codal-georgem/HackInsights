@@ -151,7 +151,7 @@ function FeedbackCard({
       }}
       className={`h-auto ${widthClasses} shrink-0 cursor-pointer select-none relative rounded-2xl md:rounded-3xl border transition-all group overflow-visible
         bg-white border-slate-200/80 text-slate-900 shadow-sm hover:shadow-md md:hover:shadow-xl hover:border-slate-300
-        dark:bg-gradient-to-br dark:from-[#1e293b] dark:to-[#0f172a] dark:border-white/10 dark:text-slate-200 dark:shadow-[0_4px_12px_rgba(0,0,0,0.5)] dark:hover:border-brand-primary/50 dark:hover:shadow-[0_0_20px_rgba(var(--c-primary),0.15)]`}
+        dark:bg-brand-surface dark:border-brand-border dark:text-brand-text dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)] dark:hover:border-brand-primary/50 dark:hover:shadow-[0_8px_20px_rgba(99,102,241,0.15)]`}
     >
       <div className="relative h-full whitespace-normal">
         <div className="relative z-10 p-4 md:p-6 flex flex-col h-full">

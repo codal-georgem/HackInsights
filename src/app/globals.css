@@ -70,19 +70,19 @@ body {
 [class~="dark"] {
   color-scheme: dark;
   /* Dark mode tokens */
-  --c-bg: #060818;
-  --c-surface: #0C1525;
-  --c-surface-2: #111E35;
-  --c-border: #1B2C4A;
-  --c-primary: #4432F5;
-  --c-primary-light: #6457F0;
-  --c-primary-glow: rgba(68, 50, 245, 0.35);
-  --c-text: #E4EEFF;
-  --c-muted: #6B84AD;
-  --c-card-bg: rgba(12, 21, 37, 0.92);
+  --c-bg: #0B1120; /* Deep Slate/Navy background */
+  --c-surface: #151E32; /* Slightly lighter surface */
+  --c-surface-2: #1E293B; /* Slate 800 */
+  --c-border: #334155; /* Slate 700 */
+  --c-primary: #6366f1; /* Indigo 500 - brighter for dark mode */
+  --c-primary-light: #818cf8; /* Indigo 400 */
+  --c-primary-glow: rgba(99, 102, 241, 0.4);
+  --c-text: #F1F5F9; /* Slate 100 - High contrast text */
+  --c-muted: #94A3B8; /* Slate 400 */
+  --c-card-bg: #1e293b; /* Slate 800 */
 
-  --foreground: #ededed;
-  --background: #0a0a0a;
+  --foreground: #F1F5F9;
+  --background: #0B1120;
 }
 
 

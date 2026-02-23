@@ -12,7 +12,12 @@ type Props = {
   onSearch: (term: string) => void;
 };
 
-const Header = memo(function Header({ onAddClick, onOrganizersClick, onTeamsClick, onSearch }: Props) {
+const Header = memo(function Header({
+  onAddClick,
+  onOrganizersClick,
+  onTeamsClick,
+  onSearch,
+}: Props) {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -21,9 +26,7 @@ const Header = memo(function Header({ onAddClick, onOrganizersClick, onTeamsClic
   }, []);
 
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-50 flex flex-wrap md:flex-nowrap items-center justify-between border-b border-brand-border bg-brand-bg/85 px-4 md:px-8 py-3 md:py-4 backdrop-blur-md transition-all"
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 flex flex-wrap md:flex-nowrap items-center justify-between border-b border-brand-border bg-brand-bg/85 px-4 md:px-8 py-3 md:py-4 backdrop-blur-md transition-all">
       <a
         href="https://codal.com/"
         target="_blank"
@@ -70,43 +73,56 @@ const Header = memo(function Header({ onAddClick, onOrganizersClick, onTeamsClic
         {mounted && (
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
-              dark:bg-brand-surface-2 dark:text-white dark:border-brand-border dark:hover:bg-brand-border/50 dark:hover:text-white"
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-primary shadow-sm transition-all hover:bg-slate-50 hover:text-brand-primary-light hover:border-slate-300 active:scale-95
+              dark:bg-brand-surface-2 dark:text-white dark:border-brand-border dark:hover:bg-brand-border/50 dark:hover:text-white dark:shadow-none"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? <Sun size={14} className="sm:w-[16px] sm:h-[16px]" /> : <Moon size={14} className="sm:w-[16px] sm:h-[16px]" />}
+            {theme === "dark" ? (
+              <Sun size={14} className="sm:w-4 sm:h-4" />
+            ) : (
+              <Moon size={14} className="sm:w-4 sm:h-4" />
+            )}
           </button>
         )}
 
         <button
           onClick={onTeamsClick}
           aria-label="View Teams"
-          className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-brand-primary backdrop-blur-sm transition-all hover:bg-white active:scale-95
+          className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/90 text-brand-primary font-bold shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-brand-primary-light hover:border-brand-primary/30 active:scale-95
             dark:bg-brand-surface-2 dark:text-white dark:border-brand-border dark:hover:bg-brand-border/50 md:w-auto md:px-3 md:gap-2"
         >
-          <Trophy size={14} className="sm:w-[16px] sm:h-[16px]" />
+          <Trophy size={14} className="sm:w-4 sm:h-4" />
           <span className="hidden md:inline text-xs font-semibold">Teams</span>
         </button>
 
         <button
           onClick={onOrganizersClick}
           aria-label="View Organizers"
-          className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-brand-border/80 bg-white/70 text-slate-900 backdrop-blur-sm transition-all hover:bg-white active:scale-95
+          className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/90 text-brand-primary font-medium shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-brand-primary-light hover:border-brand-primary/30 active:scale-95
             dark:bg-brand-surface-2 dark:text-white dark:border-brand-border dark:hover:bg-brand-border/50 md:w-auto md:px-3 md:gap-2"
         >
           <Users size={14} className="sm:w-[16px] sm:h-[16px]" />
-          <span className="hidden md:inline text-xs font-semibold">Organizers</span>
+          <span className="hidden md:inline text-xs font-semibold">
+            Organizers
+          </span>
         </button>
 
         <button
           onClick={onAddClick}
           aria-label="Add feedback"
-          className="group relative flex h-8 items-center gap-1 sm:h-auto overflow-hidden rounded-full bg-gradient-to-r from-brand-primary to-purple-600 px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold text-white shadow-[0_0_20px_rgba(var(--c-primary),0.4)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(var(--c-primary),0.6)] active:scale-95"
+          className="group relative flex h-8 items-center gap-1 sm:h-auto overflow-hidden rounded-full font-bold shadow-sm transition-all duration-300 hover:scale-105 active:scale-95
+             bg-white/90 text-brand-primary border border-slate-200/80 hover:bg-white hover:text-brand-primary-light hover:border-brand-primary/30
+             dark:bg-gradient-to-r dark:from-brand-primary dark:to-purple-600 dark:text-white dark:border-none dark:shadow-[0_0_20px_rgba(var(--c-primary),0.4)] dark:hover:shadow-[0_0_30px_rgba(var(--c-primary),0.6)]
+             px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs"
         >
-          {/* Animated background sheen */}
-          <span className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-none" />
+          {/* Animated background sheen - only show in dark mode now */}
+          <span className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-none hidden dark:block" />
 
-          <Plus size={12} strokeWidth={3} className="sm:w-[14px] sm:h-[14px] transition-transform group-hover:rotate-90 animate-pulse" />
+          <Plus
+            size={12}
+            strokeWidth={3}
+            className="sm:w-[14px] sm:h-[14px] transition-transform group-hover:rotate-90 animate-pulse"
+          />
           <span className="whitespace-nowrap">Share Feedback</span>
         </button>
       </div>
