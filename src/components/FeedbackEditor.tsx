@@ -5,7 +5,7 @@ import StarterKit from "@tiptap/starter-kit";
 import CharacterCount from "@tiptap/extension-character-count";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Bold, Italic, SmilePlus } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const MAX_CHARS = 300;
 
@@ -59,6 +59,31 @@ type Props = {
 
 export default function FeedbackEditor({ onChange }: Props) {
   const [showEmoji, setShowEmoji] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const emojiGridRef = useRef<HTMLDivElement>(null);
+  const emojiButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // If clicking outside the emoji grid AND outside the toggle button, close it.
+      if (
+        showEmoji &&
+        emojiGridRef.current &&
+        !emojiGridRef.current.contains(event.target as Node) &&
+        emojiButtonRef.current &&
+        !emojiButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowEmoji(false);
+      }
+    }
+
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmoji]);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -113,7 +138,6 @@ export default function FeedbackEditor({ onChange }: Props) {
 
   function insertEmoji(emoji: string) {
     editor?.chain().focus().insertContent(emoji).run();
-    setShowEmoji(false);
   }
 
   const charCount: number = editor?.storage.characterCount.characters() ?? 0;
@@ -122,6 +146,7 @@ export default function FeedbackEditor({ onChange }: Props) {
 
   return (
     <div
+      ref={containerRef}
       className={`relative flex flex-col rounded-xl overflow-hidden border transition-all duration-200 text-slate-900 dark:text-brand-text ${
         isOverLimit
           ? "border-red-400 bg-red-50 dark:bg-red-900/10"
@@ -164,6 +189,7 @@ export default function FeedbackEditor({ onChange }: Props) {
         <div className="mx-1 h-5 w-px bg-brand-border" />
 
         <button
+          ref={emojiButtonRef}
           type="button"
           title="Insert emoji"
           onMouseDown={(e) => {
@@ -191,7 +217,10 @@ export default function FeedbackEditor({ onChange }: Props) {
 
       {/* Emoji grid */}
       {showEmoji && (
-        <div className="flex flex-wrap gap-1 border-b border-brand-border bg-brand-surface p-2 animate-in slide-in-from-top-2">
+        <div 
+          ref={emojiGridRef} 
+          className="flex flex-wrap gap-1 border-b border-brand-border bg-brand-surface p-2 animate-in slide-in-from-top-2"
+        >
           {EMOJIS.map((emoji) => (
             <button
               key={emoji}

@@ -121,7 +121,7 @@ export default function TeamsModal({ isOpen, onClose }: Props) {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 30 }}
                         transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-                        className="relative w-full max-w-5xl h-[90vh] sm:h-[85vh] overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-[#0f111a] border border-white/20 dark:border-brand-border shadow-2xl flex flex-col"
+                        className="relative w-full max-w-5xl h-auto max-h-[85dvh] sm:h-[85vh] overflow-hidden rounded-lg sm:rounded-3xl bg-white dark:bg-[#0f111a] border border-white/20 dark:border-brand-border shadow-2xl flex flex-col"
                     >
                         {/* Header */}
                         <div className="relative h-28 sm:h-40 flex-shrink-0 overflow-hidden">
@@ -148,15 +148,6 @@ export default function TeamsModal({ isOpen, onClose }: Props) {
                             </button>
 
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 pt-8 sm:p-4">
-                                <motion.div
-                                    initial={{ y: -10, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    className="mb-1 sm:mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 sm:px-3 sm:py-1 backdrop-blur-md border border-white/30"
-                                >
-                                    <Users size={12} className="text-white sm:w-3.5 sm:h-3.5" />
-                                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white">Hackathon 2026</span>
-                                </motion.div>
-
                                 <motion.h2
                                     initial={{ y: 10, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}

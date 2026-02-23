@@ -18,13 +18,21 @@ export default function FeedbackModal({ onClose, onSuccess }: Props) {
   const [error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // Automatically focus the name input when the modal opens
+    // Slight delay to ensure animation/rendering is ready
+    const timer = setTimeout(() => {
+        nameInputRef.current?.focus();
+    }, 100);
+
     // Store the element that had focus when the modal opened
     triggerRef.current = document.activeElement as HTMLElement;
 
     // Return focus when modal closes
     return () => {
+        clearTimeout(timer);
         triggerRef.current?.focus();
     };
   }, []);
@@ -104,7 +112,7 @@ export default function FeedbackModal({ onClose, onSuccess }: Props) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative flex flex-col w-full max-w-lg max-h-[90vh] overflow-hidden rounded-[2rem] bg-white/95 dark:bg-brand-surface/95 border border-slate-100/80 dark:border-brand-border shadow-[0_20px_60px_rgba(15,23,42,0.18)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.85)] text-slate-900 dark:text-brand-text"
+          className="relative flex flex-col w-full max-w-lg max-h-[85dvh] h-auto overflow-hidden rounded-lg sm:rounded-[2rem] bg-white/95 dark:bg-brand-surface/95 border border-slate-100/80 dark:border-brand-border shadow-[0_20px_60px_rgba(15,23,42,0.18)] dark:shadow-[0_24px_70px_rgba(0,0,0,0.85)] text-slate-900 dark:text-brand-text"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Decorative Header */}
@@ -143,6 +151,7 @@ export default function FeedbackModal({ onClose, onSuccess }: Props) {
                     <span className="text-lg">👋</span>
                   </div>
                   <input
+                    ref={nameInputRef}
                     type="text"
                     maxLength={20}
                     placeholder="Drop your name or stay Incognito"

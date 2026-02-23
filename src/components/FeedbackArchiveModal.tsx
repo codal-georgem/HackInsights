@@ -84,7 +84,7 @@ export default function FeedbackArchiveModal({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-5xl h-[85vh] sm:h-auto sm:max-h-[85vh] flex flex-col overflow-hidden rounded-[2rem] bg-white dark:bg-brand-surface border border-white/20 dark:border-brand-border/50 shadow-2xl"
+          className="relative w-full max-w-5xl h-auto max-h-[85dvh] flex flex-col overflow-hidden rounded-lg sm:rounded-[2rem] bg-white dark:bg-brand-surface border border-white/20 dark:border-brand-border/50 shadow-2xl"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-brand-border p-4 sm:p-6 bg-white/50 dark:bg-brand-surface/50 backdrop-blur-md sticky top-0 z-10 w-full">
