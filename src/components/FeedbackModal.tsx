@@ -157,11 +157,8 @@ export default function FeedbackModal({ onClose, onSuccess }: Props) {
                     placeholder="Drop your name or stay Incognito"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-20 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all text-slate-800 placeholder:text-slate-400 font-medium dark:bg-brand-surface-2 dark:border-brand-border dark:text-brand-text dark:placeholder:text-brand-muted/70"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all text-slate-800 placeholder:text-slate-400 placeholder:text-xs sm:placeholder:text-base font-medium dark:bg-brand-surface-2 dark:border-brand-border dark:text-brand-text dark:placeholder:text-brand-muted/70"
                   />
-                  <div className={`absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold px-2 py-1 rounded bg-slate-200/60 dark:bg-brand-surface-2 text-slate-500 dark:text-brand-muted transition-all duration-300 ${name ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'}`}>
-                    {name ? 'SHOWN' : 'HIDDEN'}
-                  </div>
                 </div>
               </div>
 

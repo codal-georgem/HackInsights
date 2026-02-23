@@ -127,7 +127,15 @@ body {
   pointer-events: none;
   float: left;
   height: 0;
+  font-size: 0.75rem; /* text-xs for mobile */
 }
+
+@media (min-width: 640px) {
+  .ProseMirror p.is-editor-empty:first-child::before {
+    font-size: 1rem; /* text-base for sm and up */
+  }
+}
+
 
 /* ── Feedback wall card glow on hover ────────────────────────────────────── */
 .feedback-card:hover {
