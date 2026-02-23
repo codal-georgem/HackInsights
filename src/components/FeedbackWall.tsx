@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef, useState, useEffect, type ReactNode } from "react";
 import { motion, useInView } from "framer-motion";
 import { Quote, Loader2, ArrowDown } from "lucide-react";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -43,16 +43,16 @@ function getCardWidth(index: number, messageLength: number) {
   const seed = index * 1337;
   const rand = pseudoRandom(seed);
   
-  // Mobile: Full width
-  const mobileClass = "w-full";
+  // Mobile: Almost full width to show shadows
+  const mobileClass = "w-[calc(100%-2px)] mx-auto";
   
   // Desktop: specific widths
-  if (messageLength < 40) return `${mobileClass} md:min-w-[300px] md:w-[300px]`;
-  if (messageLength > 180) return `${mobileClass} md:min-w-[500px] md:w-[500px]`;
+  if (messageLength < 40) return `${mobileClass} md:min-w-[300px] md:w-[300px] md:mx-0`;
+  if (messageLength > 180) return `${mobileClass} md:min-w-[500px] md:w-[500px] md:mx-0`;
   
-  if (rand < 0.33) return `${mobileClass} md:min-w-[350px] md:w-[350px]`;
-  if (rand < 0.66) return `${mobileClass} md:min-w-[420px] md:w-[420px]`;
-  return `${mobileClass} md:min-w-[460px] md:w-[460px]`;
+  if (rand < 0.33) return `${mobileClass} md:min-w-[350px] md:w-[350px] md:mx-0`;
+  if (rand < 0.66) return `${mobileClass} md:min-w-[420px] md:w-[420px] md:mx-0`;
+  return `${mobileClass} md:min-w-[460px] md:w-[460px] md:mx-0`;
 }
 
 type Props = {
@@ -64,16 +64,36 @@ type Props = {
   onRefresh?: () => Promise<void>;
 };
 
+function getCardStyle(index: number) {
+  const seed = index * 1337;
+  const rand = pseudoRandom(seed);
+  const rotate = (rand - 0.5) * 4; // -2 to +2 degrees
+  const translateY = (pseudoRandom(seed + 1) - 0.5) * 20; // -10px to +10px
+  
+  return {
+    rotate,
+    translateY
+  };
+}
+
 function FeedbackCard({
   item,
   index,
   isNew,
+  isMobile
 }: {
   item: FeedbackItem;
   index: number;
   isNew: boolean;
+  isMobile: boolean;
 }) {
   const widthClasses = getCardWidth(index, item.message.length);
+  const { rotate, translateY } = getCardStyle(index);
+  
+  // Disable scattering on mobile
+  const effectiveRotate = isMobile ? 0 : rotate;
+  const effectiveTranslateY = isMobile ? 0 : translateY;
+
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "50px 0px 0px 0px" });
 
@@ -104,12 +124,15 @@ function FeedbackCard({
               scale: 1,
               y: 0,
               x: 0,
-              rotate: 0,
+              rotate: effectiveRotate, // Apply scattered rotation
               filter: "blur(0px)",
               boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
             }
             : {}
       }
+      style={{
+        marginTop: `${effectiveTranslateY}px`, // Apply scattered vertical offset
+      }}
       transition={
         isNew
           ? { duration: 0.8, ease: "backOut" }
@@ -122,9 +145,9 @@ function FeedbackCard({
         zIndex: 10,
         transition: { duration: 0.18 },
       }}
-      className={`h-auto md:h-[90%] ${widthClasses} flex-shrink-0 cursor-pointer select-none relative rounded-2xl md:rounded-3xl border transition-all group overflow-visible
-        bg-white border-slate-200/80 text-slate-900 shadow-sm hover:shadow-xl hover:border-slate-300 mx-0 mb-0 md:mb-0 md:mx-0
-        dark:bg-brand-card-bg dark:border-brand-border/60 dark:text-brand-text dark:shadow-[0_8px_24px_rgba(0,0,0,0.65)] dark:hover:shadow-[0_14px_34px_rgba(0,0,0,0.8)]`}
+      className={`h-auto ${widthClasses} shrink-0 cursor-pointer select-none relative rounded-2xl md:rounded-3xl border transition-all group overflow-visible
+        bg-white border-slate-200/80 text-slate-900 shadow-sm hover:shadow-md md:hover:shadow-xl hover:border-slate-300
+        dark:bg-brand-card-bg dark:border-brand-border/60 dark:text-brand-text dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)] dark:md:shadow-[0_8px_24px_rgba(0,0,0,0.65)] dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.6)] dark:md:hover:shadow-[0_14px_34px_rgba(0,0,0,0.8)]`}
     >
       <div className="relative h-full whitespace-normal">
         <div className="relative z-10 p-4 md:p-6 flex flex-col h-full">
@@ -157,6 +180,21 @@ export default function FeedbackWall({
   isSearching,
   onRefresh,
 }: Props) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if we're on mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   if (items.length === 0) {
     if (isSearching) {
       return (
@@ -215,7 +253,7 @@ export default function FeedbackWall({
   return (
     <div
       id="scrollableDiv"
-      className="fixed inset-0 pt-[72px] md:pt-[72px] pb-0 px-4 md:px-8 mt-0 overflow-y-auto md:overflow-x-auto md:overflow-y-visible scroll-smooth"
+      className="fixed inset-0 pt-[72px] pb-0 px-4 md:px-8 mt-0 overflow-y-auto scroll-smooth"
       style={{
         WebkitOverflowScrolling: 'touch',
       }}
@@ -225,12 +263,12 @@ export default function FeedbackWall({
         next={loadMore}
         hasMore={hasMore}
         loader={
-          <div className="flex-shrink-0 w-full h-20 md:h-full md:w-[100px] flex items-center justify-center">
+          <div className="flex-shrink-0 w-full h-20 flex items-center justify-center">
             <h4 className="text-slate-400">Loading...</h4>
           </div>
         }
         scrollableTarget="scrollableDiv"
-        className="flex flex-col md:flex-row md:flex-nowrap md:items-start pt-6 md:pt-4 w-full md:min-w-full md:w-max md:mx-auto h-auto md:h-full pb-32 md:pb-10 gap-x-4 gap-y-6 md:gap-y-0" 
+        className="flex flex-col md:flex-row md:flex-wrap md:justify-center md:items-center pt-6 md:pt-12 w-full max-w-7xl mx-auto h-auto pb-32 md:pb-20 gap-y-4 md:gap-y-8 gap-x-8"
         {...pullDownConfig}
       >
         {items.map((item, index) => (
@@ -239,6 +277,7 @@ export default function FeedbackWall({
             item={item}
             index={index}
             isNew={item._id === newestId}
+            isMobile={isMobile}
           />
         ))}
       </InfiniteScroll>

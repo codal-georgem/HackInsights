@@ -67,16 +67,17 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
               </div>
 
 
-              <button
+              <div
                 onClick={(e) => {
                   e.stopPropagation();
                   onClose();
                 }}
+                role="button"
                 aria-label="Close modal"
-                className="absolute top-3 right-3 z-50 rounded-full bg-black/20 dark:bg-white/10 p-1.5 text-white hover:bg-black/40 transition-all backdrop-blur-md active:scale-90"
+                className="absolute top-3 right-3 z-50 rounded-full bg-black/20 dark:bg-white/10 p-1.5 text-white hover:bg-black/40 transition-all backdrop-blur-md active:scale-90 cursor-pointer"
               >
                 <X size={18} />
-              </button>
+              </div>
             </div>
 
             <div className="flex-1 px-4 py-2 flex flex-col justify-between bg-white dark:bg-[#1a1d2d]">
@@ -153,16 +154,17 @@ export default function OrganizersFlipCard({ organizers, onClose }: Props) {
                 </h2>
               </div>
 
-              <button
+              <div
                 onClick={(e) => {
                   e.stopPropagation();
                   onClose();
                 }}
+                role="button"
                 aria-label="Close modal"
-                className="absolute top-3 right-3 z-50 rounded-full bg-black/20 dark:bg-white/10 p-1.5 text-white hover:bg-black/40 transition-all backdrop-blur-md active:scale-90"
+                className="absolute top-3 right-3 z-50 rounded-full bg-black/20 dark:bg-white/10 p-1.5 text-white hover:bg-black/40 transition-all backdrop-blur-md active:scale-90 cursor-pointer"
               >
                 <X size={18} />
-              </button>
+              </div>
             </div>
 
             <div className="flex-1 p-6 flex flex-col items-center justify-center text-center bg-white dark:bg-[#1a1d2d]">
