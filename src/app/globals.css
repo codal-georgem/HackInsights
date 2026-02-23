@@ -40,6 +40,7 @@ body {
 
 /* ── Codal brand tokens (derived from public/codal-logo.png) ─────────────── */
 :root {
+  color-scheme: light;
   /* Light mode tokens (Cool Gray / Indigo tint) */
   --c-bg: #f3f4f6;
   /* Gray-100 - slightly darker than pure white for contrast */
@@ -67,6 +68,7 @@ body {
 }
 
 [class~="dark"] {
+  color-scheme: dark;
   /* Dark mode tokens */
   --c-bg: #060818;
   --c-surface: #0C1525;
