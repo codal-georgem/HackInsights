@@ -1,16 +1,22 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+/* Required in Tailwind v4 for dark: utility classes to work with class strategy */
+@custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-brand-bg: var(--c-bg);
-  --color-brand-surface: var(--c-surface);
-  --color-brand-surface-2: var(--c-surface-2);
-  --color-brand-border: var(--c-border);
-  --color-brand-primary: var(--c-primary);
-  --color-brand-primary-light: var(--c-primary-light);
-  --color-brand-primary-glow: var(--c-primary-glow);
-  --color-brand-text: var(--c-text);
-  --color-brand-muted: var(--c-muted);
-  --color-brand-card-bg: var(--c-card-bg);
+  /* Light mode defaults — overridden by .dark class via JS (next-themes) */
+  /* Raw values here so Tailwind v4 opacity modifiers (/10, /20, etc.) work */
+  --color-brand-bg: #f3f4f6;
+  --color-brand-surface: #ffffff;
+  --color-brand-surface-2: #f9fafb;
+  --color-brand-border: #d1d5db;
+  --color-brand-primary: #4432F5;
+  --color-brand-primary-light: #6457F0;
+  --color-brand-primary-glow: rgba(68, 50, 245, 0.35);
+  --color-brand-text: #111827;
+  --color-brand-muted: #6b7280;
+  --color-brand-card-bg: rgba(255, 255, 255, 0.75);
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -69,20 +75,33 @@ body {
 
 [class~="dark"] {
   color-scheme: dark;
-  /* Dark mode tokens */
-  --c-bg: #0B1120; /* Deep Slate/Navy background */
-  --c-surface: #151E32; /* Slightly lighter surface */
-  --c-surface-2: #1E293B; /* Slate 800 */
-  --c-border: #334155; /* Slate 700 */
-  --c-primary: #6366f1; /* Indigo 500 - brighter for dark mode */
-  --c-primary-light: #818cf8; /* Indigo 400 */
+  /* Dark mode CSS variable tokens (used for direct var() references in CSS) */
+  --c-bg: #0B1120;
+  --c-surface: #151E32;
+  --c-surface-2: #1E293B;
+  --c-border: #334155;
+  --c-primary: #6366f1;
+  --c-primary-light: #818cf8;
   --c-primary-glow: rgba(99, 102, 241, 0.4);
-  --c-text: #F1F5F9; /* Slate 100 - High contrast text */
-  --c-muted: #94A3B8; /* Slate 400 */
-  --c-card-bg: #1e293b; /* Slate 800 */
+  --c-text: #F1F5F9;
+  --c-muted: #94A3B8;
+  --c-card-bg: #1e293b;
 
   --foreground: #F1F5F9;
   --background: #0B1120;
+
+  /* Override @theme tokens for dark mode so Tailwind utility classes
+     (text-brand-primary, bg-brand-primary/10, etc.) use dark palette */
+  --color-brand-bg: #0B1120;
+  --color-brand-surface: #151E32;
+  --color-brand-surface-2: #1E293B;
+  --color-brand-border: #334155;
+  --color-brand-primary: #6366f1;
+  --color-brand-primary-light: #818cf8;
+  --color-brand-primary-glow: rgba(99, 102, 241, 0.4);
+  --color-brand-text: #F1F5F9;
+  --color-brand-muted: #94A3B8;
+  --color-brand-card-bg: #1e293b;
 }
 
 
@@ -129,12 +148,14 @@ body {
   pointer-events: none;
   float: left;
   height: 0;
-  font-size: 0.75rem; /* text-xs for mobile */
+  font-size: 0.75rem;
+  /* text-xs for mobile */
 }
 
 @media (min-width: 640px) {
   .ProseMirror p.is-editor-empty:first-child::before {
-    font-size: 1rem; /* text-base for sm and up */
+    font-size: 1rem;
+    /* text-base for sm and up */
   }
 }
 

@@ -78,9 +78,9 @@ const Header = memo(function Header({
             aria-label="Toggle theme"
           >
             {theme === "dark" ? (
-              <Sun size={14} className="sm:w-4 sm:h-4" />
+              <Sun size={14} className="sm:w-4 sm:h-4 text-yellow-400" />
             ) : (
-              <Moon size={14} className="sm:w-4 sm:h-4" />
+              <Moon size={14} className="sm:w-4 sm:h-4 text-brand-primary" />
             )}
           </button>
         )}
@@ -101,7 +101,7 @@ const Header = memo(function Header({
           className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/90 text-brand-primary font-medium shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-brand-primary-light hover:border-brand-primary/30 active:scale-95
             dark:bg-brand-surface-2 dark:text-white dark:border-brand-border dark:hover:bg-brand-border/50 md:w-auto md:px-3 md:gap-2"
         >
-          <Users size={14} className="sm:w-[16px] sm:h-[16px]" />
+          <Users size={14} className="sm:w-4 sm:h-4" />
           <span className="hidden md:inline text-xs font-semibold">
             Organizers
           </span>
@@ -110,13 +110,14 @@ const Header = memo(function Header({
         <button
           onClick={onAddClick}
           aria-label="Add feedback"
-          className="group relative flex h-8 items-center gap-1 sm:h-auto overflow-hidden rounded-full font-bold shadow-sm transition-all duration-300 hover:scale-105 active:scale-95
-             bg-white/90 text-brand-primary border border-slate-200/80 hover:bg-white hover:text-brand-primary-light hover:border-brand-primary/30
-             dark:bg-gradient-to-r dark:from-brand-primary dark:to-purple-600 dark:text-white dark:border-none dark:shadow-[0_0_20px_rgba(var(--c-primary),0.4)] dark:hover:shadow-[0_0_30px_rgba(var(--c-primary),0.6)]
+          className="group relative flex h-8 items-center gap-1 sm:h-auto overflow-hidden rounded-full font-bold transition-all duration-300 hover:scale-105 active:scale-95
+             bg-linear-to-r from-[#4432F5] to-[#7c3aed] text-white border-none
+             shadow-[0_0_20px_rgba(68,50,245,0.35)] hover:shadow-[0_0_30px_rgba(68,50,245,0.55)]
+             hover:from-[#6457F0] hover:to-[#6d28d9]
              px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs"
         >
-          {/* Animated background sheen - only show in dark mode now */}
-          <span className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-none hidden dark:block" />
+          {/* Animated background sheen */}
+          <span className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-none" />
 
           <Plus
             size={12}
