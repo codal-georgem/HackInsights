@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, type ReactNode } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Quote, Loader2, ArrowDown } from "lucide-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -10,6 +10,11 @@ export type FeedbackItem = {
   message: string;
   name?: string;
   submittedAt: string;
+  reactions?: {
+    likes?: number; // 👍
+    hearts?: number; // ❤️
+    parties?: number; // 🎉
+  };
 };
 
 function renderMessage(text: string): ReactNode {
@@ -80,6 +85,41 @@ function getCardStyle(index: number) {
   };
 }
 
+const COLORS = [
+  "#4432F5",
+  "#6457F0",
+  "#a5b4fc",
+  "#FFD700",
+  "#ffffff",
+  "#f472b6",
+];
+
+// Floating reaction with quantity component
+function FloatingReaction({
+  emoji,
+  leftOffset,
+}: {
+  emoji: string;
+  leftOffset: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 1, y: 0, x: "-50%", scale: 0.5 }}
+      animate={{
+        opacity: [1, 1, 0],
+        y: -150, // Move up 150px
+        scale: [1, 1.2, 1],
+      }}
+      transition={{ duration: 1.2, ease: "easeOut" }}
+      className="absolute bottom-12 pointer-events-none z-50 text-xl font-bold text-brand-primary flex items-center gap-1"
+      style={{ left: leftOffset }}
+    >
+      <span>+1</span>
+      <span>{emoji}</span>
+    </motion.div>
+  );
+}
+
 function FeedbackCard({
   item,
   index,
@@ -103,33 +143,99 @@ function FeedbackCard({
 
   const displayName = item.name || "Anonymous";
 
+  // Reactions state
+  const [reactions, setReactions] = useState(
+    item.reactions || { likes: 0, hearts: 0, parties: 0 },
+  );
+
+  // Sync reactions if prop changes (e.g. from subscription)
+  useEffect(() => {
+    if (item.reactions) {
+      setReactions(item.reactions);
+    }
+  }, [item.reactions]);
+
+  const [userVotes, setUserVotes] = useState<{ [key: string]: boolean }>({});
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(`votes_${item._id}`);
+      if (stored) {
+        setUserVotes(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Failed to load votes", e);
+    }
+  }, [item._id]);
+
+  const [hasReacted, setHasReacted] = useState(false);
+  // Track active bursts -> { id: uniqueId, emoji: "👍", left: "20px" }
+  const [activeBursts, setActiveBursts] = useState<
+    { id: number; emoji: string; left: string }[]
+  >([]);
+
+  const handleReaction = async (
+    type: "likes" | "hearts" | "parties",
+    emoji: string,
+    leftOffset: string,
+  ) => {
+    if (userVotes[type]) return;
+
+    // Add a new burst
+    const burstId = Date.now();
+    setActiveBursts((prev) => [
+      ...prev,
+      { id: burstId, emoji, left: leftOffset },
+    ]);
+
+    // Remove it after animation duration (e.g. 1.2s + buffer)
+    setTimeout(() => {
+      setActiveBursts((prev) => prev.filter((b) => b.id !== burstId));
+    }, 1500);
+
+    const amount = 1;
+
+    setReactions((prev) => ({
+      ...prev,
+      [type]: (prev[type] || 0) + amount,
+    }));
+
+    const newVotes = { ...userVotes, [type]: true };
+    setUserVotes(newVotes);
+    localStorage.setItem(`votes_${item._id}`, JSON.stringify(newVotes));
+
+    try {
+      await fetch("/api/reaction", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item._id, reaction: type, amount }),
+      });
+    } catch (err) {
+      console.error("Failed to react", err);
+      setReactions((prev) => ({
+        ...prev,
+        [type]: Math.max(0, (prev[type] || 0) - amount),
+      }));
+      const revertedVotes = { ...userVotes, [type]: false };
+      setUserVotes(revertedVotes);
+      localStorage.setItem(`votes_${item._id}`, JSON.stringify(revertedVotes));
+    }
+  };
+
   return (
     <motion.div
       ref={ref}
-      initial={
-        isNew
-          ? { opacity: 0, scale: 0.8, y: 50, x: 0 }
-          : { opacity: 0, scale: 0.95, y: 20, x: 0 }
-      }
+      initial={{ opacity: 0 }}
       animate={
         isNew
           ? {
               opacity: 1,
-              scale: 1,
-              y: 0,
-              x: 0,
               rotate: 0,
-              filter: ["blur(10px)", "blur(0px)"],
               boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
             }
           : isInView
             ? {
                 opacity: 1,
-                scale: 1,
-                y: 0,
-                x: 0,
                 rotate: effectiveRotate, // Apply scattered rotation
-                filter: "blur(0px)",
                 boxShadow: "0 4px 12px rgba(15,23,42,0.18)",
               }
             : {}
@@ -149,18 +255,18 @@ function FeedbackCard({
         zIndex: 10,
         transition: { duration: 0.18 },
       }}
-      className={`h-auto ${widthClasses} shrink-0 cursor-pointer select-none relative rounded-2xl md:rounded-3xl border transition-all group overflow-visible
+      className={`h-auto ${widthClasses} shrink-0 select-none relative rounded-2xl md:rounded-3xl border transition-all group overflow-visible
         bg-white border-slate-200/80 text-slate-900 shadow-sm hover:shadow-md md:hover:shadow-xl hover:border-slate-300
         dark:bg-brand-surface dark:border-brand-border dark:text-brand-text dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)] dark:hover:border-brand-primary/50 dark:hover:shadow-[0_8px_20px_rgba(99,102,241,0.15)]`}
     >
-      <div className="relative h-full whitespace-normal">
-        <div className="relative z-10 p-4 md:p-6 flex flex-col h-full">
+      <div className="relative h-full whitespace-normal flex flex-col">
+        <div className="relative z-10 p-4 md:p-6 pb-2 md:pb-3 flex flex-col grow">
           {/* Message */}
           <div className="mb-2 md:mb-4 space-y-1.5">
             <div className="inline-flex items-center justify-center rounded-full bg-slate-100 dark:bg-brand-surface-2/80 text-slate-600 dark:text-brand-text/80 w-7 h-7 md:w-8 md:h-8 mb-0.5">
-              <Quote size={13} className="md:w-[15px] md:h-[15px]" />
+              <Quote size={13} className="md:w-3.75 md:h-3.75" />
             </div>
-            <p className="text-[15px] leading-normal md:text-[15px] font-medium md:leading-relaxed tracking-wide text-brand-text break-words whitespace-normal font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
+            <p className="text-[15px] leading-normal md:text-[15px] font-medium md:leading-relaxed tracking-wide text-brand-text wrap-break-word whitespace-normal font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
               {renderMessage(item.message)}
             </p>
           </div>
@@ -171,7 +277,68 @@ function FeedbackCard({
             </span>
           </div>
         </div>
+
+        {/* Reactions Bar */}
+        <div className="relative px-4 pb-4 md:px-6 md:pb-6 pt-2 flex items-center gap-3">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleReaction("likes", "👍", "40px");
+            }}
+            className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-full transition-colors active:scale-95 ${
+              userVotes.likes
+                ? "text-blue-600 bg-blue-100 dark:text-blue-300 dark:bg-blue-900/40"
+                : "text-slate-500 hover:text-blue-500 hover:bg-blue-50 dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-900/20"
+            }`}
+            title="Like"
+          >
+            <span>👍</span>
+            <span className="font-semibold">{reactions.likes || 0}</span>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleReaction("hearts", "❤️", "100px");
+            }}
+            className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-full transition-colors active:scale-95 ${
+              userVotes.hearts
+                ? "text-pink-600 bg-pink-100 dark:text-pink-300 dark:bg-pink-900/40"
+                : "text-slate-500 hover:text-pink-500 hover:bg-pink-50 dark:text-slate-400 dark:hover:text-pink-400 dark:hover:bg-pink-900/20"
+            }`}
+            title="Love"
+          >
+            <span>❤️</span>
+            <span className="font-semibold">{reactions.hearts || 0}</span>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleReaction("parties", "🎉", "160px");
+            }}
+            className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-full transition-colors active:scale-95 ${
+              userVotes.parties
+                ? "text-amber-600 bg-amber-100 dark:text-amber-300 dark:bg-amber-900/40"
+                : "text-slate-500 hover:text-amber-500 hover:bg-amber-50 dark:text-slate-400 dark:hover:text-amber-400 dark:hover:bg-amber-900/20"
+            }`}
+            title="Celebrate"
+          >
+            <span>🎉</span>
+            <span className="font-semibold">{reactions.parties || 0}</span>
+          </button>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {activeBursts.map((burst) => (
+          <FloatingReaction
+            key={burst.id}
+            emoji={burst.emoji}
+            leftOffset={burst.left}
+          />
+        ))}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -202,7 +369,7 @@ export default function FeedbackWall({
   if (items.length === 0) {
     if (isSearching) {
       return (
-        <div className="fixed inset-0 flex select-none flex-col items-center justify-center pt-16 pb-[60px] text-center">
+        <div className="fixed inset-0 flex select-none flex-col items-center justify-center pt-16 pb-15 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 dark:bg-brand-surface-2 text-slate-400 dark:text-brand-muted">
             <Quote className="h-8 w-8 opacity-50" />
           </div>
@@ -217,7 +384,7 @@ export default function FeedbackWall({
     }
 
     return (
-      <div className="fixed inset-0 flex select-none flex-col items-center justify-center pt-16 pb-[60px] text-center px-4">
+      <div className="fixed inset-0 flex select-none flex-col items-center justify-center pt-16 pb-15 text-center px-4">
         <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary animate-pulse">
           <Quote className="h-10 w-10" />
         </div>

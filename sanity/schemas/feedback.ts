@@ -20,6 +20,16 @@ export const feedback = defineType({
       validation: (Rule) => Rule.max(20),
     }),
     defineField({
+      name: "reactions",
+      title: "Reactions",
+      type: "object",
+      fields: [
+        defineField({ name: "likes", type: "number", initialValue: 0 }),
+        defineField({ name: "hearts", type: "number", initialValue: 0 }),
+        defineField({ name: "parties", type: "number", initialValue: 0 }),
+      ],
+    }),
+    defineField({
       name: "submittedAt",
       title: "Submitted At",
       type: "datetime",

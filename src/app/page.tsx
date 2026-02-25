@@ -6,7 +6,8 @@ const QUERY = `*[_type == "feedback"] | order(submittedAt desc) {
   _id,
   message,
   name,
-  submittedAt
+  submittedAt,
+  reactions
 }`;
 
 export const revalidate = 30;

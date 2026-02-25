@@ -37,7 +37,8 @@ export default function FeedbackPageClient({ initialItems }: Props) {
           _id,
           message,
           name,
-          submittedAt
+          submittedAt,
+          reactions
         }`
       );
       setItems(refreshedItems);
